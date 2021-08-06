@@ -1,11 +1,15 @@
 <template>
   <div id="home">
     <button @click="toImage">Save</button>
+    <select v-model="selected_member" @change='selectMember'>
+      <option disabled value="请选择成员">请选择成员</option>
+      <option v-for="member in member_lists" :key="member.name">{{ member.name }}</option>
+    </select>
     <div
       class="container"
       ref="imageWrapper"
     >
-      <div class="talk-header">丹生 明里</div>
+      <div class="talk-header">{{member_name}}</div>
       <draggable
         v-model="myArray"
         chosenClass="chosen"
@@ -21,10 +25,10 @@
             v-for="element in myArray"
             :key="element.id"
           >
-            <div class="talk-avatar"></div>
+            <div v-bind:style="avatarStyleObject"></div>
             <div class="talk-msg">
               <div class="msg-info">
-                <div class="msg-member">丹生 明里</div>
+                <div class="msg-member">{{member_name}}</div>
                 <div class="msg-time">8/5 11:50</div>
               </div>
               <div
@@ -63,6 +67,23 @@ export default {
   },
   data () {
     return {
+      member_name: "成员名字",
+      selected_member: '',
+      member_lists: [
+        {name: '丹生 明里', avatar: 'url('+require('@/assets/nibu.jpg')+')'},
+        {name: '金村 美玖', avatar: 'url('+require('@/assets/knmr.jpg')+')'},
+      ],
+      avatarStyleObject: {
+        width: '3em',
+        height: '3em',
+        textAlign: 'center',
+        borderRadius: '50%',
+        backgroundImage: 'url('+require('@/assets/hnt_logo.svg')+')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'top',
+        margin: '5px 5px 5px 20px',
+        display: 'inline-block',
+      },
       drag: false,
       // 定义要被拖拽对象的数组
       myArray: [
@@ -126,6 +147,18 @@ export default {
         }, 100);
       });
     },
+    selectMember() {
+      console.log(this.selected_member)
+      this.member_name = this.selected_member
+      let avatar_url = ""
+      for (const item of this.member_lists) {
+        if (item.name == this.member_name) {
+          avatar_url = item.avatar
+        }
+      }
+      console.log(avatar_url)
+      this.avatarStyleObject.backgroundImage = avatar_url
+    },
 
     fileDownload (downloadUrl) {
       let aLink = document.createElement("a");
@@ -183,18 +216,6 @@ export default {
   align-items: flex-start;
   margin-top: 0.5em;
   margin-right: 5px;
-}
-.talk-avatar {
-  width: 3em;
-  height: 3em;
-  text-align: center;
-  border-radius: 50%;
-  background-image: url(../assets/nibu.jpg);
-  background-size: cover;
-  background-position: top;
-  margin: 5px 5px 5px 20px;
-
-  display: inline-block;
 }
 .talk-msg {
   display: flex;
