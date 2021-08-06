@@ -140,7 +140,7 @@ export default {
   },
   data () {
     return {
-      memberName: "成员名字",
+      memberName: "日向坂46",
       selectedMember: "",
       members: [
         { name: '潮 紗理菜', avatar: 'url(' + require('@/assets/sarina.jpg') + ')' },
@@ -171,7 +171,7 @@ export default {
         height: '3em',
         textAlign: 'center',
         borderRadius: '50%',
-        backgroundImage: 'url(' + require('@/assets/金村 美玖.jpg') + ')',
+        backgroundImage: 'url(' + require('@/assets/hnt_logo.svg') + ')',
         backgroundSize: 'cover',
         backgroundPosition: 'top',
         margin: '5px 5px 5px 20px',
