@@ -5,27 +5,34 @@
       class="container"
       ref="imageWrapper"
     >
-      <div class="talk-header">丹生 明里</div>
+      <div
+        class="talk-header"
+        v-text="member"
+      ></div>
       <draggable
-        v-model="myArray"
-        chosenClass="chosen"
+        v-model="msgs"
         forceFallback="true"
-        group="people"
         animation="500"
-        @start="onStart"
-        @end="onEnd"
+        group="msgs"
+        style="flex:auto"
       >
         <transition-group>
           <div
             class="talk-item"
-            v-for="element in myArray"
-            :key="element.id"
+            v-for="item in msgs"
+            :key="item.id"
           >
             <div class="talk-avatar"></div>
             <div class="talk-msg">
               <div class="msg-info">
-                <div class="msg-member">丹生 明里</div>
-                <div class="msg-time">8/5 11:50</div>
+                <div
+                  class="msg-member"
+                  v-text="member"
+                ></div>
+                <div
+                  class="msg-time"
+                  v-text="item.time"
+                ></div>
               </div>
               <div
                 class="msg-bubble"
@@ -39,7 +46,48 @@
                 <div
                   class="talktext"
                   contenteditable="true"
-                  v-text="element.name"
+                  v-text="item.content"
+                  v-if="!item.onlyImg"
+                >
+                </div>
+              </div>
+            </div>
+          </div>
+        </transition-group>
+      </draggable>
+    </div>
+    <div class="config">
+      <div class="talk-header">Config</div>
+
+      <div class="config-header">模板</div>
+      <draggable
+        v-model="templates"
+        forceFallback="true"
+        animation="500"
+        :options="{group:{name: 'msgs',pull:'clone',put:false},sort: true}"
+      >
+        <transition-group>
+          <div
+            class="talk-item"
+            v-for="(item) in templates"
+            :key="item.id"
+          >
+            <div class="talk-avatar"></div>
+            <div class="talk-msg">
+              <div class="msg-info">
+                <div
+                  class="msg-member"
+                  v-text="member"
+                ></div>
+                <div
+                  class="msg-time"
+                  v-text="item.time"
+                ></div>
+              </div>
+              <div class="msg-bubble">
+                <div
+                  class="talktext"
+                  v-text="item.content"
                 >
                 </div>
               </div>
@@ -63,38 +111,36 @@ export default {
   },
   data () {
     return {
-      drag: false,
-      // 定义要被拖拽对象的数组
-      myArray: [
+      // 名字
+      member: "丹生 明里",
+      // 头像
+      avatar: "",
+      // 消息
+      msgs: [
         {
-          people: "cn1",
-          id: 1,
-          name: "Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。",
-        },
-        {
-          people: "cn",
-          id: 2,
-          name: "ひがしむらめい🍓「昨日はミーグリでした！全握ミーグリでいちごミルクのペアでした！いちごミルクは佐々木久美のあだ名のくみるくと東村芽依のあだ名のめいちご合わせて｢いちごミルク｣です🍓🍼いちごミルクのペアが好きっていう方もたくさんで嬉しかったです🥰」 ",
-        },
-        {
-          people: "cn3",
-          id: 3,
-          name: "background: linear-gradient(to right, #8ec4e6 40%, #a77bd0 100%);",
+          // 时间
+          time: "",
+          // 内容
+          content: "Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。",
+          id: 0,
         },
       ],
+      templates: [
+        {
+          // 时间
+          time: "1/1 11:11",
+          // 内容
+          content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。",
+          // id
+          id: 1,
+          onlyImg: true
+        },
+      ]
     };
   },
   methods: {
-    // 开始拖拽事件
-    onStart () {
-      this.drag = true;
-    },
-    // 拖拽结束事件
-    onEnd () {
-      console.log(this.myArray)
-      this.drag = false;
-    },
     addImage (e) {
+      console.log("active")
       e.stopPropagation()
       e.preventDefault()
       let fileData = e.dataTransfer.files[0]
@@ -128,22 +174,20 @@ export default {
     },
 
     fileDownload (downloadUrl) {
-      let aLink = document.createElement("a");
-      aLink.style.display = "none";
-      aLink.href = downloadUrl;
-      aLink.download = "msg.png";
+      let aLink = document.createElement("a")
+      aLink.style.display = "none"
+      aLink.href = downloadUrl
+      aLink.download = "msg.png"
       // 触发点击-然后移除
-      document.body.appendChild(aLink);
-      aLink.click();
-      document.body.removeChild(aLink);
-    },
+      document.body.appendChild(aLink)
+      aLink.click()
+      document.body.removeChild(aLink)
+    }
   },
 };
 </script>
 
 <style scoped>
-/* container */
-
 #home {
   background: #37474f;
   display: flex;
@@ -152,7 +196,23 @@ export default {
   margin: 0;
   min-height: 100vh;
 }
+.drag-content {
+  min-height: 200px;
+}
 .container {
+  margin: 20px;
+  width: 500px;
+  min-width: 500px;
+  min-height: 90vh;
+  background-color: #fefefe;
+  border-radius: 10px;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+.config {
   margin: 20px;
   width: 500px;
   min-width: 500px;
@@ -170,6 +230,16 @@ export default {
   height: 60px;
   background: linear-gradient(to right, #8ec4e6 40%, #a77bd0 100%);
   border-radius: 10px 10px 0px 0px;
+  font-family: "Fira Code";
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  line-height: 60px;
+}
+.config-header {
+  width: inherit;
+  height: 60px;
+  background: linear-gradient(to right, #8ec4e6 40%, #a77bd0 100%);
   font-family: "Fira Code";
   font-size: 22px;
   color: white;
@@ -224,6 +294,7 @@ export default {
   font-size: 1em;
   border-radius: 2%;
   text-align: center;
+  min-height: 70px;
 }
 .msg-bubble:after {
   content: " ";
