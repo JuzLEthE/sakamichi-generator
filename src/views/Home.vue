@@ -3,7 +3,7 @@
     <button @click="toImage">Save</button>
     <select v-model="selected_member" @change='selectMember'>
       <option disabled value="请选择成员">请选择成员</option>
-      <option v-for="member in member_lists" :key="member.name">{{ member.name }}</option>
+      <option v-for="member in member_list" :key="member.name">{{ member.name }}</option>
     </select>
     <div
       class="container"
@@ -69,9 +69,29 @@ export default {
     return {
       member_name: "成员名字",
       selected_member: '',
-      member_lists: [
-        {name: '丹生 明里', avatar: 'url('+require('@/assets/nibu.jpg')+')'},
-        {name: '金村 美玖', avatar: 'url('+require('@/assets/knmr.jpg')+')'},
+      member_list: [
+        {name: '潮 紗理菜', avatar: 'url('+require('@/assets/sarina.jpg')+')'},
+        {name: '影山 優佳', avatar: 'url('+require('@/assets/yuuka.jpg')+')'},
+        {name: '加藤 史帆', avatar: 'url('+require('@/assets/shiho.jpg')+')'},
+        {name: '齊藤 京子', avatar: 'url('+require('@/assets/kyonko.jpg')+')'},
+        {name: '佐々木 久美', avatar: 'url('+require('@/assets/kumi.jpg')+')'},
+        {name: '佐々木 美玲', avatar: 'url('+require('@/assets/mirei.jpg')+')'},
+        {name: '高瀬 愛奈', avatar: 'url('+require('@/assets/manafi.jpg')+')'},
+        {name: '高本 彩花', avatar: 'url('+require('@/assets/ayaka.jpg')+')'},
+        {name: '東村 芽依', avatar: 'url('+require('@/assets/meimei.jpg')+')'},
+        {name: '金村 美玖', avatar: 'url('+require('@/assets/miku.jpg')+')'},
+        {name: '河田 陽菜', avatar: 'url('+require('@/assets/hina.jpg')+')'},
+        {name: '小坂 菜緒', avatar: 'url('+require('@/assets/nao.jpg')+')'},
+        {name: '富田 鈴花', avatar: 'url('+require('@/assets/suzuka.jpg')+')'},
+        {name: '丹生 明里', avatar: 'url('+require('@/assets/akari.jpg')+')'},
+        {name: '濱岸 ひより', avatar: 'url('+require('@/assets/hiyori.jpg')+')'},
+        {name: '松田 好花', avatar: 'url('+require('@/assets/konoka.jpg')+')'},
+        {name: '宮田 愛萌', avatar: 'url('+require('@/assets/manamo.jpg')+')'},
+        {name: '渡邉 美穂', avatar: 'url('+require('@/assets/miho.jpg')+')'},
+        {name: '上村 ひなの', avatar: 'url('+require('@/assets/hinano.jpg')+')'},
+        {name: '髙橋 未来虹', avatar: 'url('+require('@/assets/mikuni.jpg')+')'},
+        {name: '森本 茉莉', avatar: 'url('+require('@/assets/marie.jpg')+')'},
+        {name: '山口 陽世', avatar: 'url('+require('@/assets/haruyo.jpg')+')'},
       ],
       avatarStyleObject: {
         width: '3em',
@@ -151,7 +171,7 @@ export default {
       console.log(this.selected_member)
       this.member_name = this.selected_member
       let avatar_url = ""
-      for (const item of this.member_lists) {
+      for (const item of this.member_list) {
         if (item.name == this.member_name) {
           avatar_url = item.avatar
         }
