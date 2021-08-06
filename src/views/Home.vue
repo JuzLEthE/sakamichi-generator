@@ -1,16 +1,15 @@
 <template>
   <div id="home">
-    <button @click="toImage">Save</button>
     <select
-      v-model="selected_member"
-      @change='selectMember'
+      v-model="selectedMember"
+      @change="selectMember"
     >
       <option
         disabled
         value="请选择成员"
       >请选择成员</option>
       <option
-        v-for="member in member_lists"
+        v-for="member in members"
         :key="member.name"
       >{{ member.name }}</option>
     </select>
@@ -20,7 +19,7 @@
     >
       <div
         class="talk-header"
-        v-text="member_name"
+        v-text="memberName"
       ></div>
       <draggable
         v-model="msgs"
@@ -29,38 +28,39 @@
         group="msgs"
         style="flex:auto"
       >
-        <transition-group>
+        <transition-group
+          tag="div"
+          class="transition-group"
+        >
           <div
             class="talk-item"
             v-for="item in msgs"
             :key="item.id"
+            @drop="addImage"
           >
             <div :style="avatarStyleObject"></div>
             <div class="talk-msg">
               <div class="msg-info">
                 <div
                   class="msg-member"
-                  v-text="member_name"
+                  v-text="memberName"
                 ></div>
                 <div
-                  class="msg-time"
+                  style="min-width:30px"
+                  contenteditable="true"
                   v-text="item.time"
                 ></div>
               </div>
-              <div
-                class="msg-bubble"
-                @drop="addImage"
-              >
+              <div class="msg-bubble">
                 <img
                   class="msg-img"
-                  @dblclick="changeVisible"
+                  @dblclick="removeImg($event,item)"
                   hidden
                 />
                 <div
                   class="talktext"
                   contenteditable="true"
                   v-text="item.content"
-                  v-if="!item.onlyImg"
                 >
                 </div>
               </div>
@@ -69,46 +69,61 @@
         </transition-group>
       </draggable>
     </div>
-    <div class="config">
-      <div class="talk-header">Config</div>
 
-      <div class="config-header">模板</div>
-      <draggable
-        v-model="templates"
-        forceFallback="true"
-        animation="500"
-        :options="{group:{name: 'msgs',pull:'clone',put:false},sort: true}"
+    <nav class="menu">
+      <input
+        type="checkbox"
+        href="#"
+        class="menu-open"
+        name="menu-open"
+        id="menu-open"
+      />
+      <label
+        class="menu-open-button"
+        for="menu-open"
       >
-        <transition-group>
-          <div
-            class="talk-item"
-            v-for="(item) in templates"
-            :key="item.id"
-          >
-            <div :style="avatarStyleObject"></div>
-            <div class="talk-msg">
-              <div class="msg-info">
-                <div
-                  class="msg-member"
-                  v-text="member"
-                ></div>
-                <div
-                  class="msg-time"
-                  v-text="item.time"
-                ></div>
-              </div>
-              <div class="msg-bubble">
-                <div
-                  class="talktext"
-                  v-text="item.content"
-                >
-                </div>
-              </div>
-            </div>
-          </div>
-        </transition-group>
-      </draggable>
-    </div>
+        <span class="lines line-1"></span>
+        <span class="lines line-2"></span>
+        <span class="lines line-3"></span>
+      </label>
+
+      <!-- 新增消息 -->
+      <a
+        href="#"
+        @click="addMsg('normal')"
+        class="menu-item blue"
+      > <i class="fa fa-solid fa-plus"></i> </a>
+      <!-- 新增仅图片消息 -->
+      <a
+        href="#"
+        class="menu-item green"
+        @click="addMsg('img')"
+      > <i class="fa fa-solid fa-image"></i> </a>
+      <!-- 选择成员 -->
+      <a
+        href="#"
+        class="menu-item red"
+      > <i class="fa fa-solid fa-user"></i> </a>
+      <!-- 将html保存成图片 -->
+      <a
+        href="#"
+        @click="toImage"
+        class="menu-item purple"
+      > <i class="fa fa-solid fa-download"></i> </a>
+      <!-- 删除一条 -->
+      <a
+        href="#"
+        @click="removeMsg"
+        class="menu-item orange"
+      > <i class="fa fa-solid fa-trash"></i> </a>
+      <!-- 新增音频消息 -->
+      <a
+        href="#"
+        @click="addMsg('voice')"
+        class="menu-item lightblue"
+      > <i class="fa fa-solid fa-microphone"></i> </a>
+    </nav>
+
   </div>
 </template>
 
@@ -116,6 +131,7 @@
 // 导入draggable组件
 import draggable from "vuedraggable";
 import html2canvas from "html2canvas"
+import "@/assets/css/nav.css"
 export default {
   name: "Home",
   // 注册draggable组件
@@ -124,35 +140,45 @@ export default {
   },
   data () {
     return {
-      member_name: "成员名字",
-      selected_member: '',
-      member_lists: [
-        { name: '丹生 明里', avatar: 'url(' + require('@/assets/nibu.jpg') + ')' },
-        { name: '金村 美玖', avatar: 'url(' + require('@/assets/knmr.jpg') + ')' },
+      memberName: "成员名字",
+      selectedMember: "",
+      members: [
+        { name: '潮 紗理菜', avatar: 'url(' + require('@/assets/sarina.jpg') + ')' },
+        { name: '影山 優佳', avatar: 'url(' + require('@/assets/yuuka.jpg') + ')' },
+        { name: '加藤 史帆', avatar: 'url(' + require('@/assets/shiho.jpg') + ')' },
+        { name: '齊藤 京子', avatar: 'url(' + require('@/assets/kyonko.jpg') + ')' },
+        { name: '佐々木 久美', avatar: 'url(' + require('@/assets/kumi.jpg') + ')' },
+        { name: '佐々木 美玲', avatar: 'url(' + require('@/assets/mirei.jpg') + ')' },
+        { name: '高瀬 愛奈', avatar: 'url(' + require('@/assets/manafi.jpg') + ')' },
+        { name: '高本 彩花', avatar: 'url(' + require('@/assets/ayaka.jpg') + ')' },
+        { name: '東村 芽依', avatar: 'url(' + require('@/assets/meimei.jpg') + ')' },
+        { name: '金村 美玖', avatar: 'url(' + require('@/assets/miku.jpg') + ')' },
+        { name: '河田 陽菜', avatar: 'url(' + require('@/assets/hina.jpg') + ')' },
+        { name: '小坂 菜緒', avatar: 'url(' + require('@/assets/nao.jpg') + ')' },
+        { name: '富田 鈴花', avatar: 'url(' + require('@/assets/suzuka.jpg') + ')' },
+        { name: '丹生 明里', avatar: 'url(' + require('@/assets/akari.jpg') + ')' },
+        { name: '濱岸 ひより', avatar: 'url(' + require('@/assets/hiyori.jpg') + ')' },
+        { name: '松田 好花', avatar: 'url(' + require('@/assets/konoka.jpg') + ')' },
+        { name: '宮田 愛萌', avatar: 'url(' + require('@/assets/manamo.jpg') + ')' },
+        { name: '渡邉 美穂', avatar: 'url(' + require('@/assets/miho.jpg') + ')' },
+        { name: '上村 ひなの', avatar: 'url(' + require('@/assets/hinano.jpg') + ')' },
+        { name: '髙橋 未来虹', avatar: 'url(' + require('@/assets/mikuni.jpg') + ')' },
+        { name: '森本 茉莉', avatar: 'url(' + require('@/assets/marie.jpg') + ')' },
+        { name: '山口 陽世', avatar: 'url(' + require('@/assets/haruyo.jpg') + ')' },
       ],
       avatarStyleObject: {
         width: '3em',
         height: '3em',
         textAlign: 'center',
         borderRadius: '50%',
-        backgroundImage: 'url(' + require('@/assets/hnt_logo.svg') + ')',
+        backgroundImage: 'url(' + require('@/assets/金村 美玖.jpg') + ')',
         backgroundSize: 'cover',
         backgroundPosition: 'top',
         margin: '5px 5px 5px 20px',
         display: 'inline-block',
       },
-      drag: false,
       // 定义要被拖拽对象的数组
       msgs: [
-        {
-          // 时间
-          time: "",
-          // 内容
-          content: "Vue (读音 /vjuː/，类似于 view) 是一套用于构建用户界面的渐进式框架。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。",
-          id: 0,
-        },
-      ],
-      templates: [
         {
           // 时间
           time: "1/1 11:11",
@@ -160,20 +186,50 @@ export default {
           content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。",
           // id
           id: 1,
-          onlyImg: true
+          img: false,
+          voice: false,
         },
-      ]
+      ],
+      // 定义消息类型
+      type: {
+        "normal": {
+          time: "8/7 上午 2:45",
+          content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。",
+          img: false,
+          voice: false
+        },
+        "img": {
+          time: "8/7 上午 2:45",
+          content: "仅图片的消息，拖动本地图片到气泡上进行上传，双击图片删除本条消息。",
+          img: true,
+          voice: false
+        },
+        "voice": {
+          time: "8/7 上午 2:45",
+          content: "请输入音频时长。",
+          img: false,
+          voice: true
+        }
+      }
     };
   },
   methods: {
+    addMsg (type) {
+      let msg = {}
+      Object.assign(msg, this.type[type])
+      msg.id = Date.now()
+      this.msgs.push(msg)
+    },
+    removeMsg () {
+      this.msgs.pop()
+    },
     addImage (e) {
-      console.log("active")
       e.stopPropagation()
       e.preventDefault()
       let fileData = e.dataTransfer.files[0]
       const fileReader = new FileReader()
       fileReader.readAsDataURL(fileData)
-      let imgEl = e.currentTarget.firstElementChild
+      let imgEl = e.currentTarget.getElementsByClassName("msg-img")[0]
       console.log(imgEl)
       fileReader.addEventListener('load', function () {
         // 读取完成
@@ -183,9 +239,13 @@ export default {
         imgEl.hidden = false
       })
     },
-    changeVisible (e) {
+    removeImg (e, item) {
       e.stopPropagation()
       e.preventDefault()
+      if (item.onlyImg) {
+        this.msgs.filter(item => item.id !== item.id)
+        return
+      }
       e.currentTarget.src = null
       e.currentTarget.hidden = 'hidden'
     },
@@ -199,17 +259,13 @@ export default {
         }, 100);
       });
     },
-    selectMember () {
-      console.log(this.selected_member)
-      this.member_name = this.selected_member
-      let avatar_url = ""
-      for (const item of this.member_lists) {
-        if (item.name == this.member_name) {
-          avatar_url = item.avatar
-        }
-      }
-      console.log(avatar_url)
-      this.avatarStyleObject.backgroundImage = avatar_url
+
+    selectMember (e) {
+      this.memberName = e.target.value
+      const member = this.members.find(item => {
+        return item.name = this.memberName
+      })
+      this.avatarStyleObject.backgroundImage = member.avatar
     },
 
     fileDownload (downloadUrl) {
@@ -227,6 +283,10 @@ export default {
 </script>
 
 <style scoped>
+.transition-group {
+  min-height: calc(90vh - 62px);
+}
+
 #home {
   background: #37474f;
   display: flex;
@@ -235,23 +295,7 @@ export default {
   margin: 0;
   min-height: 100vh;
 }
-.drag-content {
-  min-height: 200px;
-}
 .container {
-  margin: 20px;
-  width: 500px;
-  min-width: 500px;
-  min-height: 90vh;
-  background-color: #fefefe;
-  border-radius: 10px;
-  display: flex;
-  justify-content: flex-start;
-  flex-direction: column;
-  position: relative;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
-}
-.config {
   margin: 20px;
   width: 500px;
   min-width: 500px;
