@@ -262,10 +262,10 @@ export default {
 
     selectMember (e) {
       this.memberName = e.target.value
-      const member = this.members.find(item => {
-        return item.name = this.memberName
+      const select = this.members.find(item => {
+        return item.name === this.memberName
       })
-      this.avatarStyleObject.backgroundImage = member.avatar
+      this.avatarStyleObject.backgroundImage = select.avatar
     },
 
     fileDownload (downloadUrl) {
