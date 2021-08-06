@@ -26,12 +26,8 @@
         forceFallback="true"
         animation="500"
         group="msgs"
-        style="flex:auto"
       >
-        <transition-group
-          tag="div"
-          class="transition-group"
-        >
+        <transition-group>
           <div
             class="talk-item"
             v-for="item in msgs"
@@ -251,7 +247,9 @@ export default {
     },
     toImage () {
       html2canvas(this.$refs.imageWrapper, {
-        allowTaint: true
+        allowTaint: true,
+        scale: 4,
+        dpi: 300,
       }).then(canvas => {
         let dataURL = canvas.toDataURL("image/png")
         setTimeout(() => {
@@ -283,10 +281,6 @@ export default {
 </script>
 
 <style scoped>
-.transition-group {
-  min-height: calc(90vh - 62px);
-}
-
 #home {
   background: #37474f;
   display: flex;
