@@ -1,13 +1,26 @@
 <template>
   <div id="home">
     <button @click="toImage">Save</button>
+    <select
+      v-model="selected_member"
+      @change='selectMember'
+    >
+      <option
+        disabled
+        value="请选择成员"
+      >请选择成员</option>
+      <option
+        v-for="member in member_lists"
+        :key="member.name"
+      >{{ member.name }}</option>
+    </select>
     <div
       class="container"
       ref="imageWrapper"
     >
       <div
         class="talk-header"
-        v-text="member"
+        v-text="member_name"
       ></div>
       <draggable
         v-model="msgs"
@@ -22,12 +35,12 @@
             v-for="item in msgs"
             :key="item.id"
           >
-            <div class="talk-avatar"></div>
+            <div :style="avatarStyleObject"></div>
             <div class="talk-msg">
               <div class="msg-info">
                 <div
                   class="msg-member"
-                  v-text="member"
+                  v-text="member_name"
                 ></div>
                 <div
                   class="msg-time"
@@ -72,7 +85,7 @@
             v-for="(item) in templates"
             :key="item.id"
           >
-            <div class="talk-avatar"></div>
+            <div :style="avatarStyleObject"></div>
             <div class="talk-msg">
               <div class="msg-info">
                 <div
@@ -111,11 +124,25 @@ export default {
   },
   data () {
     return {
-      // 名字
-      member: "丹生 明里",
-      // 头像
-      avatar: "",
-      // 消息
+      member_name: "成员名字",
+      selected_member: '',
+      member_lists: [
+        { name: '丹生 明里', avatar: 'url(' + require('@/assets/nibu.jpg') + ')' },
+        { name: '金村 美玖', avatar: 'url(' + require('@/assets/knmr.jpg') + ')' },
+      ],
+      avatarStyleObject: {
+        width: '3em',
+        height: '3em',
+        textAlign: 'center',
+        borderRadius: '50%',
+        backgroundImage: 'url(' + require('@/assets/hnt_logo.svg') + ')',
+        backgroundSize: 'cover',
+        backgroundPosition: 'top',
+        margin: '5px 5px 5px 20px',
+        display: 'inline-block',
+      },
+      drag: false,
+      // 定义要被拖拽对象的数组
       msgs: [
         {
           // 时间
@@ -171,6 +198,18 @@ export default {
           this.fileDownload(dataURL)
         }, 100);
       });
+    },
+    selectMember () {
+      console.log(this.selected_member)
+      this.member_name = this.selected_member
+      let avatar_url = ""
+      for (const item of this.member_lists) {
+        if (item.name == this.member_name) {
+          avatar_url = item.avatar
+        }
+      }
+      console.log(avatar_url)
+      this.avatarStyleObject.backgroundImage = avatar_url
     },
 
     fileDownload (downloadUrl) {
@@ -254,18 +293,6 @@ export default {
   margin-top: 0.5em;
   margin-right: 5px;
 }
-.talk-avatar {
-  width: 3em;
-  height: 3em;
-  text-align: center;
-  border-radius: 50%;
-  background-image: url(../assets/nibu.jpg);
-  background-size: cover;
-  background-position: top;
-  margin: 5px 5px 5px 20px;
-
-  display: inline-block;
-}
 .talk-msg {
   display: flex;
   flex-direction: column;
@@ -307,8 +334,6 @@ export default {
   bottom: auto;
   border-top: 15px solid #f6f6f6;
   border-left: 10px solid transparent;
-  /* border: 7px solid;
-  border-color: #f6f6f6 #f6f6f6 transparent transparent; */
 }
 .msg-img {
   margin-top: 1em;
