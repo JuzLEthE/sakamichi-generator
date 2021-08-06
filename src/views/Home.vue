@@ -67,7 +67,7 @@ export default {
   },
   data () {
     return {
-      member_name: "成员名字",
+      member_name: "日向坂46",
       selected_member: '',
       member_list: [
         {name: '潮 紗理菜', avatar: 'url('+require('@/assets/sarina.jpg')+')'},
