@@ -19,6 +19,8 @@
     >
       <div
         class="talk-header"
+        contenteditable="plaintext-only"
+        @blur="changeName"
         v-text="memberName"
       ></div>
       <draggable
@@ -32,13 +34,16 @@
             class="talk-item"
             v-for="item in msgs"
             :key="item.id"
-            @drop="addImage($event,item)"
           >
             <div
-              :style="avatarStyle"
-              @dblclick="removeImg($event,item)"
-            ></div>
-            <div class="talk-msg">
+              class="talk-avatar"
+              contenteditable="true"
+              @drop="setAvatar($event)"
+            ><img :src="avartarSrc" /></div>
+            <div
+              class="talk-msg"
+              @drop="addImage($event,item)"
+            >
               <div class="msg-info">
                 <div v-text="memberName"></div>
                 <div
@@ -148,43 +153,41 @@ export default {
   data () {
     return {
       memberName: "日向坂46",
+      avartarSrc: require('@/assets/img/avatar/hnt_logo.svg'),
       members: [
-        { name: '潮 紗理菜', avatar: 'url(' + require('@/assets/img/avatar/sarina.jpg') + ')' },
-        { name: '影山 優佳', avatar: 'url(' + require('@/assets/img/avatar/yuuka.jpg') + ')' },
-        { name: '加藤 史帆', avatar: 'url(' + require('@/assets/img/avatar/shiho.jpg') + ')' },
-        { name: '齊藤 京子', avatar: 'url(' + require('@/assets/img/avatar/kyonko.jpg') + ')' },
-        { name: '佐々木 久美', avatar: 'url(' + require('@/assets/img/avatar/kumi.jpg') + ')' },
-        { name: '佐々木 美玲', avatar: 'url(' + require('@/assets/img/avatar/mirei.jpg') + ')' },
-        { name: '高瀬 愛奈', avatar: 'url(' + require('@/assets/img/avatar/manafi.jpg') + ')' },
-        { name: '高本 彩花', avatar: 'url(' + require('@/assets/img/avatar/ayaka.jpg') + ')' },
-        { name: '東村 芽依', avatar: 'url(' + require('@/assets/img/avatar/meimei.jpg') + ')' },
-        { name: '金村 美玖', avatar: 'url(' + require('@/assets/img/avatar/miku.jpg') + ')' },
-        { name: '河田 陽菜', avatar: 'url(' + require('@/assets/img/avatar/hina.jpg') + ')' },
-        { name: '小坂 菜緒', avatar: 'url(' + require('@/assets/img/avatar/nao.jpg') + ')' },
-        { name: '富田 鈴花', avatar: 'url(' + require('@/assets/img/avatar/suzuka.jpg') + ')' },
-        { name: '丹生 明里', avatar: 'url(' + require('@/assets/img/avatar/akari.jpg') + ')' },
-        { name: '濱岸 ひより', avatar: 'url(' + require('@/assets/img/avatar/hiyori.jpg') + ')' },
-        { name: '松田 好花', avatar: 'url(' + require('@/assets/img/avatar/konoka.jpg') + ')' },
-        { name: '宮田 愛萌', avatar: 'url(' + require('@/assets/img/avatar/manamo.jpg') + ')' },
-        { name: '渡邉 美穂', avatar: 'url(' + require('@/assets/img/avatar/miho.jpg') + ')' },
-        { name: '上村 ひなの', avatar: 'url(' + require('@/assets/img/avatar/hinano.jpg') + ')' },
-        { name: '髙橋 未来虹', avatar: 'url(' + require('@/assets/img/avatar/mikuni.jpg') + ')' },
-        { name: '森本 茉莉', avatar: 'url(' + require('@/assets/img/avatar/marie.jpg') + ')' },
-        { name: '山口 陽世', avatar: 'url(' + require('@/assets/img/avatar/haruyo.jpg') + ')' },
+        { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/sarina.jpg') },
+        { name: '影山 優佳', avatar: require('@/assets/img/avatar/yuuka.jpg') },
+        { name: '加藤 史帆', avatar: require('@/assets/img/avatar/shiho.jpg') },
+        { name: '齊藤 京子', avatar: require('@/assets/img/avatar/kyonko.jpg') },
+        { name: '佐々木 久美', avatar: require('@/assets/img/avatar/kumi.jpg') },
+        { name: '佐々木 美玲', avatar: require('@/assets/img/avatar/mirei.jpg') },
+        { name: '高瀬 愛奈', avatar: require('@/assets/img/avatar/manafi.jpg') },
+        { name: '高本 彩花', avatar: require('@/assets/img/avatar/ayaka.jpg') },
+        { name: '東村 芽依', avatar: require('@/assets/img/avatar/meimei.jpg') },
+        { name: '金村 美玖', avatar: require('@/assets/img/avatar/miku.jpg') },
+        { name: '河田 陽菜', avatar: require('@/assets/img/avatar/hina.jpg') },
+        { name: '小坂 菜緒', avatar: require('@/assets/img/avatar/nao.jpg') },
+        { name: '富田 鈴花', avatar: require('@/assets/img/avatar/suzuka.jpg') },
+        { name: '丹生 明里', avatar: require('@/assets/img/avatar/akari.jpg') },
+        { name: '濱岸 ひより', avatar: require('@/assets/img/avatar/hiyori.jpg') },
+        { name: '松田 好花', avatar: require('@/assets/img/avatar/konoka.jpg') },
+        { name: '宮田 愛萌', avatar: require('@/assets/img/avatar/manamo.jpg') },
+        { name: '渡邉 美穂', avatar: require('@/assets/img/avatar/miho.jpg') },
+        { name: '上村 ひなの', avatar: require('@/assets/img/avatar/hinano.jpg') },
+        { name: '髙橋 未来虹', avatar: require('@/assets/img/avatar/mikuni.jpg') },
+        { name: '森本 茉莉', avatar: require('@/assets/img/avatar/marie.jpg') },
+        { name: '山口 陽世', avatar: require('@/assets/img/avatar/haruyo.jpg') },
       ],
-      avatarStyle: {
-        width: '3em',
-        height: '3em',
-        textAlign: 'center',
-        borderRadius: '50%',
-        backgroundImage: 'url(' + require('@/assets/img/avatar/hnt_logo.svg') + ')',
-        backgroundSize: 'cover',
-        backgroundPosition: 'top',
-        margin: '5px 5px 5px 20px',
-        display: 'inline-block',
-      },
       // 定义要被拖拽对象的数组
-      msgs: [],
+      msgs: [
+        {
+          id: Date.now(),
+          time: new Date().format("MM/dd hh:mm"),
+          content: "1.拖动本地图片到头像处进行替换。2.拖动本地图片到气泡上进行上传，双击图片取消。3.点击顶部文字和每条消息的时间，可以进行修改。4.如需处理emoji或者超链接，请复制后粘贴到气泡中。",
+          img: false,
+          voice: false
+        },
+      ],
       // 定义消息类型
       type: {
         "normal": {
@@ -206,14 +209,28 @@ export default {
     };
   },
   methods: {
-
+    changeName (e) {
+      this.memberName = e.currentTarget.innerText;
+    },
     selectMember () {
       const selected = this.members.find(item => {
         return item.name === this.memberName
       })
-      this.avatarStyle.backgroundImage = selected.avatar
+      this.avartarSrc = selected.avatar
     },
-
+    setAvatar (e) {
+      e.stopPropagation()
+      e.preventDefault()
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(e.dataTransfer.files[0])
+      let imgEl = e.currentTarget.getElementsByTagName("img")[0]
+      fileReader.addEventListener('load', function () {
+        // 读取完成
+        let res = fileReader.result
+        // res是base64格式的图片
+        imgEl.src = res
+      })
+    },
     addMsg (type) {
       let msg = { id: Date.now(), time: new Date().format("MM/dd hh:mm") }
       Object.assign(msg, this.type[type])
@@ -223,7 +240,6 @@ export default {
       this.msgs.pop()
     },
     addImage (e, item) {
-      console.log(e.currentTarget)
       e.stopPropagation()
       e.preventDefault()
       const fileReader = new FileReader()
@@ -292,31 +308,7 @@ export default {
       return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"))
     }
   },
-  created () {
-    Date.prototype.format = function (fmt) {
-      var o = {
-        "M+": this.getMonth() + 1,                 //月份 
-        "d+": this.getDate(),                    //日 
-        "h+": this.getHours(),                   //小时 
-        "m+": this.getMinutes(),                 //分 
-        "s+": this.getSeconds(),                 //秒 
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
-        "S": this.getMilliseconds()             //毫秒 
-      };
-      if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-      }
-      for (var k in o) {
-        if (new RegExp("(" + k + ")").test(fmt)) {
-          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        }
-      }
-      return fmt;
-    }
-  },
-  mounted () {
-    this.addMsg('normal')
-  }
+
 };
 </script>
 
@@ -360,6 +352,21 @@ export default {
   align-items: flex-start;
   margin-top: 0.5em;
   margin-right: 5px;
+}
+.talk-avatar {
+  width: 3em;
+  height: 3em;
+  text-align: center;
+  border-radius: 50%;
+  margin: 5px 5px 5px 20px;
+  display: inline-block;
+  overflow: hidden;
+}
+.talk-avatar img {
+  width: 100%;
+
+  min-height: 100%;
+  object-fit: cover;
 }
 .talk-msg {
   display: flex;
