@@ -56,8 +56,8 @@
                   class="msg-content"
                   contenteditable="true"
                   v-if="!item.voice"
-                  v-text="item.content"
-                >
+                  v-on:paste="contentPaste"
+                >{{item.content}}
                 </div>
                 <div
                   class="msg-content"
@@ -137,6 +137,7 @@
 // 导入draggable组件
 import draggable from "vuedraggable";
 import html2canvas from "html2canvas"
+import twemoji from "twemoji"
 import "@/assets/css/nav.css"
 export default {
   name: "Home",
@@ -183,34 +184,20 @@ export default {
         display: 'inline-block',
       },
       // 定义要被拖拽对象的数组
-      msgs: [
-        {
-          // 时间
-          time: "1/1 11:11",
-          // 内容
-          content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。",
-          // id
-          id: 1,
-          img: false,
-          voice: false,
-        },
-      ],
+      msgs: [],
       // 定义消息类型
       type: {
         "normal": {
-          time: "8/7 上午 2:45",
-          content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。",
+          content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。如需处理emoji或者超链接，请复制后粘贴到气泡中。",
           img: false,
           voice: false
         },
         "img": {
-          time: "8/7 上午 2:45",
           content: "仅图片的消息，拖动本地图片到气泡上进行上传，双击图片删除本条消息。",
           img: true,
           voice: false
         },
         "voice": {
-          time: "8/7 上午 2:45",
           content: "--:--",
           img: false,
           voice: true
@@ -228,7 +215,7 @@ export default {
     },
 
     addMsg (type) {
-      let msg = { id: Date.now() }
+      let msg = { id: Date.now(), time: new Date().format("MM/dd hh:mm") }
       Object.assign(msg, this.type[type])
       this.msgs.push(msg)
     },
@@ -286,8 +273,50 @@ export default {
       document.body.appendChild(aLink)
       aLink.click()
       document.body.removeChild(aLink)
+    },
+
+    contentPaste (e) {
+      e.stopPropagation();
+      e.preventDefault();
+      let pastedText
+      if (window.clipboardData && window.clipboardData.getData) {
+        // 获取拷贝进剪切板指定格式的数据 (此处用的Text格式)
+        pastedText = window.clipboardData.getData('Text')
+      } else if ((e.clipboardData || e.originalEvent.clipboardData) && (e.clipboardData || e.originalEvent.clipboardData).getData) {
+        pastedText = (e.originalEvent || e).clipboardData.getData('text/plain')
+      }
+      document.execCommand("insertHTML", false, this.handleEmojiLink(pastedText));
+    },
+    handleEmojiLink (plainText) {
+      let exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i;
+      return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"))
     }
   },
+  created () {
+    Date.prototype.format = function (fmt) {
+      var o = {
+        "M+": this.getMonth() + 1,                 //月份 
+        "d+": this.getDate(),                    //日 
+        "h+": this.getHours(),                   //小时 
+        "m+": this.getMinutes(),                 //分 
+        "s+": this.getSeconds(),                 //秒 
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度 
+        "S": this.getMilliseconds()             //毫秒 
+      };
+      if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      }
+      for (var k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+      }
+      return fmt;
+    }
+  },
+  mounted () {
+    this.addMsg('normal')
+  }
 };
 </script>
 
@@ -383,6 +412,7 @@ export default {
   padding: 0.5em;
   text-align: left;
   line-height: 1.8em;
+  -webkit-user-modify: "read-write-plaintext-only";
 }
 .msg-content:focus-visible {
   outline: #8ec4e6 auto 1px;

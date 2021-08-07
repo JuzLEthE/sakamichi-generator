@@ -12,6 +12,7 @@
     "font-awesome": "^4.7.0",
     "html2canvas": "^1.2.1",
     "normalize.css": "^8.0.1",
+    "twemoji": "^13.1.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",
     "vuedraggable": "^2.24.3"
