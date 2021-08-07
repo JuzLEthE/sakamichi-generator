@@ -1,7 +1,7 @@
 <template>
   <div id="home">
     <select
-      v-model="selectedMember"
+      v-model="memberName"
       @change="selectMember"
     >
       <option
@@ -23,7 +23,7 @@
       ></div>
       <draggable
         v-model="msgs"
-        forceFallback="true"
+        forceFallback="false"
         animation="500"
         group="msgs"
       >
@@ -32,15 +32,15 @@
             class="talk-item"
             v-for="item in msgs"
             :key="item.id"
-            @drop="addImage"
+            @drop="addImage($event,item)"
           >
-            <div :style="avatarStyleObject"></div>
+            <div
+              :style="avatarStyle"
+              @dblclick="removeImg($event,item)"
+            ></div>
             <div class="talk-msg">
               <div class="msg-info">
-                <div
-                  class="msg-member"
-                  v-text="memberName"
-                ></div>
+                <div v-text="memberName"></div>
                 <div
                   style="min-width:30px"
                   contenteditable="true"
@@ -49,15 +49,25 @@
               </div>
               <div class="msg-bubble">
                 <img
-                  class="msg-img"
                   @dblclick="removeImg($event,item)"
                   hidden
                 />
                 <div
-                  class="talktext"
+                  class="msg-content"
                   contenteditable="true"
+                  v-if="!item.voice"
                   v-text="item.content"
                 >
+                </div>
+                <div
+                  class="msg-content"
+                  v-if="item.voice"
+                ><i class="fa fa-solid fa-volume-up volume-icon"></i>
+                  <div
+                    class="voice-content"
+                    contenteditable="true"
+                    v-text="item.content"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -137,37 +147,36 @@ export default {
   data () {
     return {
       memberName: "日向坂46",
-      selectedMember: "",
       members: [
-        { name: '潮 紗理菜', avatar: 'url(' + require('@/assets/sarina.jpg') + ')' },
-        { name: '影山 優佳', avatar: 'url(' + require('@/assets/yuuka.jpg') + ')' },
-        { name: '加藤 史帆', avatar: 'url(' + require('@/assets/shiho.jpg') + ')' },
-        { name: '齊藤 京子', avatar: 'url(' + require('@/assets/kyonko.jpg') + ')' },
-        { name: '佐々木 久美', avatar: 'url(' + require('@/assets/kumi.jpg') + ')' },
-        { name: '佐々木 美玲', avatar: 'url(' + require('@/assets/mirei.jpg') + ')' },
-        { name: '高瀬 愛奈', avatar: 'url(' + require('@/assets/manafi.jpg') + ')' },
-        { name: '高本 彩花', avatar: 'url(' + require('@/assets/ayaka.jpg') + ')' },
-        { name: '東村 芽依', avatar: 'url(' + require('@/assets/meimei.jpg') + ')' },
-        { name: '金村 美玖', avatar: 'url(' + require('@/assets/miku.jpg') + ')' },
-        { name: '河田 陽菜', avatar: 'url(' + require('@/assets/hina.jpg') + ')' },
-        { name: '小坂 菜緒', avatar: 'url(' + require('@/assets/nao.jpg') + ')' },
-        { name: '富田 鈴花', avatar: 'url(' + require('@/assets/suzuka.jpg') + ')' },
-        { name: '丹生 明里', avatar: 'url(' + require('@/assets/akari.jpg') + ')' },
-        { name: '濱岸 ひより', avatar: 'url(' + require('@/assets/hiyori.jpg') + ')' },
-        { name: '松田 好花', avatar: 'url(' + require('@/assets/konoka.jpg') + ')' },
-        { name: '宮田 愛萌', avatar: 'url(' + require('@/assets/manamo.jpg') + ')' },
-        { name: '渡邉 美穂', avatar: 'url(' + require('@/assets/miho.jpg') + ')' },
-        { name: '上村 ひなの', avatar: 'url(' + require('@/assets/hinano.jpg') + ')' },
-        { name: '髙橋 未来虹', avatar: 'url(' + require('@/assets/mikuni.jpg') + ')' },
-        { name: '森本 茉莉', avatar: 'url(' + require('@/assets/marie.jpg') + ')' },
-        { name: '山口 陽世', avatar: 'url(' + require('@/assets/haruyo.jpg') + ')' },
+        { name: '潮 紗理菜', avatar: 'url(' + require('@/assets/img/avatar/sarina.jpg') + ')' },
+        { name: '影山 優佳', avatar: 'url(' + require('@/assets/img/avatar/yuuka.jpg') + ')' },
+        { name: '加藤 史帆', avatar: 'url(' + require('@/assets/img/avatar/shiho.jpg') + ')' },
+        { name: '齊藤 京子', avatar: 'url(' + require('@/assets/img/avatar/kyonko.jpg') + ')' },
+        { name: '佐々木 久美', avatar: 'url(' + require('@/assets/img/avatar/kumi.jpg') + ')' },
+        { name: '佐々木 美玲', avatar: 'url(' + require('@/assets/img/avatar/mirei.jpg') + ')' },
+        { name: '高瀬 愛奈', avatar: 'url(' + require('@/assets/img/avatar/manafi.jpg') + ')' },
+        { name: '高本 彩花', avatar: 'url(' + require('@/assets/img/avatar/ayaka.jpg') + ')' },
+        { name: '東村 芽依', avatar: 'url(' + require('@/assets/img/avatar/meimei.jpg') + ')' },
+        { name: '金村 美玖', avatar: 'url(' + require('@/assets/img/avatar/miku.jpg') + ')' },
+        { name: '河田 陽菜', avatar: 'url(' + require('@/assets/img/avatar/hina.jpg') + ')' },
+        { name: '小坂 菜緒', avatar: 'url(' + require('@/assets/img/avatar/nao.jpg') + ')' },
+        { name: '富田 鈴花', avatar: 'url(' + require('@/assets/img/avatar/suzuka.jpg') + ')' },
+        { name: '丹生 明里', avatar: 'url(' + require('@/assets/img/avatar/akari.jpg') + ')' },
+        { name: '濱岸 ひより', avatar: 'url(' + require('@/assets/img/avatar/hiyori.jpg') + ')' },
+        { name: '松田 好花', avatar: 'url(' + require('@/assets/img/avatar/konoka.jpg') + ')' },
+        { name: '宮田 愛萌', avatar: 'url(' + require('@/assets/img/avatar/manamo.jpg') + ')' },
+        { name: '渡邉 美穂', avatar: 'url(' + require('@/assets/img/avatar/miho.jpg') + ')' },
+        { name: '上村 ひなの', avatar: 'url(' + require('@/assets/img/avatar/hinano.jpg') + ')' },
+        { name: '髙橋 未来虹', avatar: 'url(' + require('@/assets/img/avatar/mikuni.jpg') + ')' },
+        { name: '森本 茉莉', avatar: 'url(' + require('@/assets/img/avatar/marie.jpg') + ')' },
+        { name: '山口 陽世', avatar: 'url(' + require('@/assets/img/avatar/haruyo.jpg') + ')' },
       ],
-      avatarStyleObject: {
+      avatarStyle: {
         width: '3em',
         height: '3em',
         textAlign: 'center',
         borderRadius: '50%',
-        backgroundImage: 'url(' + require('@/assets/hnt_logo.svg') + ')',
+        backgroundImage: 'url(' + require('@/assets/img/avatar/hnt_logo.svg') + ')',
         backgroundSize: 'cover',
         backgroundPosition: 'top',
         margin: '5px 5px 5px 20px',
@@ -202,7 +211,7 @@ export default {
         },
         "voice": {
           time: "8/7 上午 2:45",
-          content: "请输入音频时长。",
+          content: "--:--",
           img: false,
           voice: true
         }
@@ -210,23 +219,34 @@ export default {
     };
   },
   methods: {
+
+    selectMember () {
+      const selected = this.members.find(item => {
+        return item.name === this.memberName
+      })
+      this.avatarStyle.backgroundImage = selected.avatar
+    },
+
     addMsg (type) {
-      let msg = {}
+      let msg = { id: Date.now() }
       Object.assign(msg, this.type[type])
-      msg.id = Date.now()
       this.msgs.push(msg)
     },
     removeMsg () {
       this.msgs.pop()
     },
-    addImage (e) {
+    addImage (e, item) {
+      console.log(e.currentTarget)
       e.stopPropagation()
       e.preventDefault()
-      let fileData = e.dataTransfer.files[0]
       const fileReader = new FileReader()
-      fileReader.readAsDataURL(fileData)
-      let imgEl = e.currentTarget.getElementsByClassName("msg-img")[0]
-      console.log(imgEl)
+      fileReader.readAsDataURL(e.dataTransfer.files[0])
+      let imgEl = e.currentTarget.getElementsByTagName("img")[0]
+      if (item.img) {
+        console.log(e.currentTarget)
+        let content = e.currentTarget.getElementsByClassName("msg-content")[0]
+        content.hidden = 'hidden'
+      }
       fileReader.addEventListener('load', function () {
         // 读取完成
         let res = fileReader.result
@@ -238,12 +258,11 @@ export default {
     removeImg (e, item) {
       e.stopPropagation()
       e.preventDefault()
-      if (item.onlyImg) {
-        this.msgs.filter(item => item.id !== item.id)
-        return
-      }
       e.currentTarget.src = null
       e.currentTarget.hidden = 'hidden'
+      if (item.img) {
+        this.msgs.splice(this.msgs.findIndex(msg => msg.id === item.id), 1)
+      }
     },
     toImage () {
       html2canvas(this.$refs.imageWrapper, {
@@ -256,14 +275,6 @@ export default {
           this.fileDownload(dataURL)
         }, 100);
       });
-    },
-
-    selectMember (e) {
-      this.memberName = e.target.value
-      const select = this.members.find(item => {
-        return item.name === this.memberName
-      })
-      this.avatarStyleObject.backgroundImage = select.avatar
     },
 
     fileDownload (downloadUrl) {
@@ -313,16 +324,6 @@ export default {
   text-align: center;
   line-height: 60px;
 }
-.config-header {
-  width: inherit;
-  height: 60px;
-  background: linear-gradient(to right, #8ec4e6 40%, #a77bd0 100%);
-  font-family: "Fira Code";
-  font-size: 22px;
-  color: white;
-  text-align: center;
-  line-height: 60px;
-}
 
 .talk-item {
   display: flex;
@@ -359,7 +360,7 @@ export default {
   font-size: 1em;
   border-radius: 2%;
   text-align: center;
-  min-height: 70px;
+  padding: 0.5em;
 }
 .msg-bubble:after {
   content: " ";
@@ -373,24 +374,36 @@ export default {
   border-top: 15px solid #f6f6f6;
   border-left: 10px solid transparent;
 }
-.msg-img {
-  margin-top: 1em;
+.msg-bubble img {
+  padding: 0.5em;
   width: 80%;
 }
 /* talk bubble contents */
-.talktext {
-  margin: 0.5em;
+.msg-content {
   padding: 0.5em;
   text-align: left;
   line-height: 1.8em;
 }
-.talktext:focus-visible {
+.msg-content:focus-visible {
   outline: #8ec4e6 auto 1px;
 }
 
-.talktext p {
-  /* remove webkit p margins */
-  -webkit-margin-before: 0em;
-  -webkit-margin-after: 0em;
+.volume-icon {
+  background: #879fc1;
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  color: #fefefe;
+  text-align: center;
+  position: absolute;
+  left: 50%;
+  margin-left: -15px;
+  font-size: 20px;
+}
+.voice-content {
+  margin-left: calc(50% + 25px);
+  color: #879fc1;
+  font-size: 20px;
 }
 </style>
