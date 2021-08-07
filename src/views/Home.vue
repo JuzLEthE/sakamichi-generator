@@ -299,6 +299,7 @@ export default {
   align-items: center;
   margin: 0;
   min-height: 100vh;
+  font-family: "Noto Sans SC";
 }
 .container {
   margin: 20px;
@@ -318,7 +319,6 @@ export default {
   height: 60px;
   background: linear-gradient(to right, #8ec4e6 40%, #a77bd0 100%);
   border-radius: 10px 10px 0px 0px;
-  font-family: "Fira Code";
   font-size: 22px;
   color: white;
   text-align: center;
