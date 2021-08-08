@@ -28,6 +28,7 @@
         forceFallback="false"
         animation="500"
         group="msgs"
+        filter=".mask"
       >
         <transition-group>
           <div
@@ -60,13 +61,13 @@
                 <div
                   class="msg-content"
                   contenteditable="true"
-                  v-if="!item.voice"
+                  v-if="item.type !== 'voice'"
                   v-on:paste="contentPaste"
                 >{{item.content}}
                 </div>
                 <div
                   class="msg-content"
-                  v-if="item.voice"
+                  v-if="item.type === 'voice'"
                 ><i class="fa fa-solid fa-volume-up volume-icon"></i>
                   <div
                     class="voice-content"
@@ -108,7 +109,7 @@
       <a
         href="#"
         class="menu-item green"
-        @click="addMsg('img')"
+        @click="addMsg('image')"
       > <i class="fa fa-solid fa-image"></i> </a>
       <!-- 选择成员 -->
       <a
@@ -184,31 +185,27 @@ export default {
           id: Date.now(),
           time: new Date().format("MM/dd hh:mm"),
           content: "1.拖动本地图片到头像处进行替换。2.拖动本地图片到气泡上进行上传，双击图片取消。3.点击顶部文字和每条消息的时间，可以进行修改。4.如需处理emoji或者超链接，请复制后粘贴到气泡中。",
-          img: false,
-          voice: false
+          type: 'normal'
         },
       ],
       // 定义消息类型
       type: {
         "normal": {
           content: "带文字的消息，拖动本地图片到气泡上进行上传，双击图片取消。如需处理emoji或者超链接，请复制后粘贴到气泡中。",
-          img: false,
-          voice: false
         },
-        "img": {
+        "image": {
           content: "仅图片的消息，拖动本地图片到气泡上进行上传，双击图片删除本条消息。",
-          img: true,
-          voice: false
         },
         "voice": {
           content: "--:--",
-          img: false,
-          voice: true
         }
       }
     };
   },
   methods: {
+    hideMask (e) {
+      e.currentTarget.classList.add("remove-mask")
+    },
     changeName (e) {
       this.memberName = e.currentTarget.innerText;
     },
@@ -232,7 +229,7 @@ export default {
       })
     },
     addMsg (type) {
-      let msg = { id: Date.now(), time: new Date().format("MM/dd hh:mm") }
+      let msg = { id: Date.now(), time: new Date().format("MM/dd hh:mm"), type }
       Object.assign(msg, this.type[type])
       this.msgs.push(msg)
     },
@@ -242,10 +239,13 @@ export default {
     addImage (e, item) {
       e.stopPropagation()
       e.preventDefault()
+      // 音频无图片
+      if (item.type === 'voice') return
+
       const fileReader = new FileReader()
       fileReader.readAsDataURL(e.dataTransfer.files[0])
       let imgEl = e.currentTarget.getElementsByTagName("img")[0]
-      if (item.img) {
+      if (item.type === 'image') {
         console.log(e.currentTarget)
         let content = e.currentTarget.getElementsByClassName("msg-content")[0]
         content.hidden = 'hidden'
@@ -263,7 +263,7 @@ export default {
       e.preventDefault()
       e.currentTarget.src = null
       e.currentTarget.hidden = 'hidden'
-      if (item.img) {
+      if (item.type === 'image') {
         this.msgs.splice(this.msgs.findIndex(msg => msg.id === item.id), 1)
       }
     },
@@ -345,7 +345,7 @@ export default {
   text-align: center;
   line-height: 60px;
 }
-
+/* 消息相关css */
 .talk-item {
   display: flex;
   justify-content: start;
@@ -377,6 +377,7 @@ export default {
   width: -moz-calc(100% - 5em);
   width: -webkit-calc(100% - 5em);
   width: calc(100% - 5.5em);
+  overflow: hidden;
 }
 .msg-info {
   width: 95%;
@@ -386,7 +387,7 @@ export default {
   color: gray;
 }
 
-/* CSS talk bubble */
+/* 气泡相关css */
 .msg-bubble {
   margin-top: 0.5em;
   position: relative;
@@ -409,12 +410,72 @@ export default {
   bottom: auto;
   border-top: 15px solid #f6f6f6;
   border-left: 10px solid transparent;
+  z-index: 0;
 }
 .msg-bubble img {
   padding: 0.5em;
   width: 80%;
 }
-/* talk bubble contents */
+/* 气泡mask相关css */
+.mask {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  border-radius: 2%;
+  z-index: 1;
+}
+@keyframes mask-slide {
+  0% {
+    left: 0%;
+  }
+  25% {
+    left: -2em;
+  }
+  100% {
+    left: calc(100% + 10px);
+  }
+}
+.remove-mask {
+  animation: mask-slide 1s;
+  animation-fill-mode: forwards;
+}
+.normal {
+  background-color: #aaddf0;
+}
+.normal:after {
+  border-top: 15px solid #aaddf0;
+}
+.image {
+  background-color: #aacaf0;
+}
+.image:after {
+  border-top: 15px solid #aacaf0;
+}
+.voice {
+  background-color: #b8abf0;
+}
+.voice:after {
+  border-top: 15px solid #b8abf0;
+}
+.video {
+  background-color: #d4abf1;
+}
+.video:after {
+  border-top: 15px solid #d4abf1;
+}
+.mask:after {
+  content: " ";
+  position: absolute;
+  width: 0;
+  height: 0;
+  left: -10px;
+  right: auto;
+  top: 10px;
+  bottom: auto;
+  border-left: 10px solid transparent;
+  z-index: 1;
+}
+/* 气泡内容相关css */
 .msg-content {
   padding: 0.5em;
   text-align: left;
