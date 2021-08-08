@@ -389,9 +389,9 @@ export default {
 
 /* 气泡相关css */
 .msg-bubble {
-  margin-top: 0.5em;
+  margin-top: 1em;
   position: relative;
-  width: 95%;
+  width: 93%;
   background-color: #f6f6f6;
   display: inline-block;
   font-size: 1em;
