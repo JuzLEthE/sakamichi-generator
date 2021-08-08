@@ -350,7 +350,7 @@ export default {
   display: flex;
   justify-content: start;
   align-items: flex-start;
-  margin-top: 0.5em;
+  margin-top: 1em;
   margin-right: 5px;
 }
 .talk-avatar {
@@ -372,7 +372,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  margin-top: 1em;
+  margin-top: 0.5em;
   margin-bottom: 0.5em;
   width: -moz-calc(100% - 5em);
   width: -webkit-calc(100% - 5em);
