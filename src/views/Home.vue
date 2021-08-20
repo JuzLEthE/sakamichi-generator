@@ -84,67 +84,28 @@ export default {
       memberName: '日向坂46',
       avartarSrc: require('@/assets/img/avatar/hnt_logo.svg'),
       members: [
-        {
-          name: '潮 紗理菜',
-          avatar: require('@/assets/img/avatar/sarina.jpg')
-        },
+        { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/yuuka.jpg') },
         { name: '加藤 史帆', avatar: require('@/assets/img/avatar/shiho.jpg') },
-        {
-          name: '齊藤 京子',
-          avatar: require('@/assets/img/avatar/kyonko.jpg')
-        },
-        {
-          name: '佐々木 久美',
-          avatar: require('@/assets/img/avatar/kumi.jpg')
-        },
-        {
-          name: '佐々木 美玲',
-          avatar: require('@/assets/img/avatar/mirei.jpg')
-        },
-        {
-          name: '高瀬 愛奈',
-          avatar: require('@/assets/img/avatar/manafi.jpg')
-        },
+        { name: '齊藤 京子', avatar: require('@/assets/img/avatar/kyonko.jpg') },
+        { name: '佐々木 久美', avatar: require('@/assets/img/avatar/kumi.jpg') },
+        { name: '佐々木 美玲', avatar: require('@/assets/img/avatar/mirei.jpg') },
+        { name: '高瀬 愛奈', avatar: require('@/assets/img/avatar/manafi.jpg') },
         { name: '高本 彩花', avatar: require('@/assets/img/avatar/ayaka.jpg') },
-        {
-          name: '東村 芽依',
-          avatar: require('@/assets/img/avatar/meimei.jpg')
-        },
+        { name: '東村 芽依', avatar: require('@/assets/img/avatar/meimei.jpg') },
         { name: '金村 美玖', avatar: require('@/assets/img/avatar/miku.jpg') },
         { name: '河田 陽菜', avatar: require('@/assets/img/avatar/hina.jpg') },
         { name: '小坂 菜緒', avatar: require('@/assets/img/avatar/nao.jpg') },
-        {
-          name: '富田 鈴花',
-          avatar: require('@/assets/img/avatar/suzuka.jpg')
-        },
-        { name: '丹生 明里', avatar: require('@/assets/img/avatar/akari.jpg') },
-        {
-          name: '濱岸 ひより',
-          avatar: require('@/assets/img/avatar/hiyori.jpg')
-        },
-        {
-          name: '松田 好花',
-          avatar: require('@/assets/img/avatar/konoka.jpg')
-        },
-        {
-          name: '宮田 愛萌',
-          avatar: require('@/assets/img/avatar/manamo.jpg')
-        },
+        { name: '富田 鈴花', avatar: require('@/assets/img/avatar/suzuka.jpg') },
+        { ame: '丹生 明里', avatar: require('@/assets/img/avatar/akari.jpg') },
+        { name: '濱岸 ひより', avatar: require('@/assets/img/avatar/hiyori.jpg') },
+        { name: '松田 好花', avatar: require('@/assets/img/avatar/konoka.jpg') },
+        { name: '宮田 愛萌', avatar: require('@/assets/img/avatar/manamo.jpg') },
         { name: '渡邉 美穂', avatar: require('@/assets/img/avatar/miho.jpg') },
-        {
-          name: '上村 ひなの',
-          avatar: require('@/assets/img/avatar/hinano.jpg')
-        },
-        {
-          name: '髙橋 未来虹',
-          avatar: require('@/assets/img/avatar/mikuni.jpg')
-        },
+        { name: '上村 ひなの', avatar: require('@/assets/img/avatar/hinano.jpg') },
+        { name: '髙橋 未来虹', avatar: require('@/assets/img/avatar/mikuni.jpg') },
         { name: '森本 茉莉', avatar: require('@/assets/img/avatar/marie.jpg') },
-        {
-          name: '山口 陽世',
-          avatar: require('@/assets/img/avatar/haruyo.jpg')
-        }
+        { name: '山口 陽世', avatar: require('@/assets/img/avatar/haruyo.jpg') }
       ],
       // 定义要被拖拽对象的数组
       msgs: [
