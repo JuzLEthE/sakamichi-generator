@@ -10,7 +10,9 @@
   transform: translate(0, 0) !important;
 }
 
-a{color: #157ab5;}
+a {
+  color: #157ab5;
+}
 
 .menu-item,
 .menu-open-button {
