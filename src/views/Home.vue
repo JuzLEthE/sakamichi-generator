@@ -6,9 +6,9 @@
     </select>
     <div class="container" ref="imageWrapper">
       <div class="talk-header" contenteditable="plaintext-only" @blur="changeName" v-text="memberName"></div>
-      <draggable v-model="msgs" forceFallback="false" animation="500" group="msgs" filter=".mask">
+      <draggable :disabled="dragDisabled" v-model="msgs" forceFallback="false" animation="500" group="msgs" filter=".immovable">
         <transition-group>
-          <div class="talk-item" v-for="item in msgs" :key="item.id">
+          <div class="talk-item" v-for="item in msgs" :key="item.id" :ref="'item'+item.id">
             <div class="talk-avatar" contenteditable="true" @drop="setAvatar($event)">
               <img :src="avartarSrc" />
             </div>
@@ -18,11 +18,37 @@
                 <div style="min-width: 30px" contenteditable="true" v-text="item.time"></div>
               </div>
               <div class="msg-bubble">
-                <img @dblclick="removeImg($event, item)" hidden />
-                <div class="msg-content" contenteditable="true" v-if="item.type !== 'voice'" v-on:paste="contentPaste">{{ item.content }}</div>
-                <div class="msg-content" v-if="item.type === 'voice'">
-                  <i class="fa fa-solid fa-volume-up volume-icon"></i>
-                  <div class="voice-content" contenteditable="true" v-text="item.content"></div>
+                <div class="mask immovable" :class="item.type" @click="hideMask($event,'item'+item.id)" v-html="maskIcon[item.type]"></div>
+                <div class="content-wrapper">
+                  <img @dblclick="removeImg($event, item)" hidden />
+                  <div
+                    class="msg-content"
+                    v-bind:style="{minHeight: item.type=='image'?'150px':'60px'}"
+                    contenteditable="true"
+                    v-if="item.type !== 'voice'"
+                    @paste="contentPaste"
+                  >{{ item.content }}</div>
+                  <div class="msg-content" v-if="item.type === 'voice'">
+                    <div class="voice-wrapper">
+                      <svg
+                        t="1629474206215"
+                        class="icon volume-icon"
+                        viewBox="0 0 1024 1024"
+                        version="1.1"
+                        xmlns="http://www.w3.org/2000/svg"
+                        p-id="1203"
+                        width="20"
+                        height="20"
+                      >
+                        <path
+                          d="M462.06 142.1L284.12 320H80c-26.52 0-48 21.48-48 48v288c0 26.5 21.48 48 48 48h204.12l177.94 177.9c30.06 30.06 81.94 8.94 81.94-33.94V176.04c0-42.92-51.92-63.96-81.94-33.94zM992 512c0-127.06-64.12-243.88-171.54-312.48-22.38-14.28-52.06-7.64-66.24 14.92s-7.56 52.42 14.82 66.72C848.54 331.94 896 418.22 896 512s-47.46 180.06-126.96 230.84c-22.38 14.28-29 44.14-14.82 66.72 13.02 20.72 42.24 30.28 66.24 14.92C927.88 755.88 992 639.06 992 512z m-283.54-153.74c-23.16-12.66-52.38-4.32-65.22 18.9-12.78 23.22-4.32 52.4 18.9 65.22C687.96 456.56 704 483.26 704 512c0 28.76-16.04 55.44-41.84 69.62-23.22 12.82-31.68 42-18.9 65.22 12.86 23.32 42.1 31.6 65.22 18.9 56.46-31.1 91.54-90 91.54-153.76s-35.08-122.64-91.56-153.72z"
+                          p-id="1204"
+                          fill="#ffffff"
+                        />
+                      </svg>
+                      <div class="voice-content" contenteditable="true" v-text="item.content"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -81,6 +107,7 @@ export default {
   },
   data() {
     return {
+      dragDisabled: false,
       memberName: '日向坂46',
       avartarSrc: require('@/assets/img/avatar/hnt_logo.svg'),
       members: [
@@ -128,12 +155,27 @@ export default {
         voice: {
           content: '--:--'
         }
+      },
+      maskIcon: {
+        normal:
+          '<svg t="1629476284558" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="51474" width="50" height="50"><path d="M512 898.8c57.8 0 112.8-11.4 162.6-31.8 1.2-0.6 2.2-1 3.4-1.4 0.2 0 0.4 0 0.4-0.2 7-2.6 14.6-4 22.4-4 8.6 0 16.8 1.6 24.2 4.8l168 61.8-44.2-176.8c0-10.6 3-20.6 7.8-29.2 0 0 0 0 0 0 1.6-2.6 3.2-5.2 5-7.4 41.8-62.6 66-137 66-216.8C928 275.8 741.8 96 512 96 282.2 96 96 275.8 96 497.4 96 719.2 282.2 898.8 512 898.8z" p-id="51475" fill="#ffffff"></path></svg>',
+        image:
+          '<svg t="1629478159872" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="40920" width="50" height="50"><path d="M213.333333 473.6l85.333334-85.333333 234.666666 234.666666 149.333334-149.333333 128 128V213.333333H213.333333v260.266667zM170.666667 128h682.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v682.666666a42.666667 42.666667 0 0 1-42.666667 42.666667H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667V170.666667a42.666667 42.666667 0 0 1 42.666667-42.666667z m490.666666 298.666667a64 64 0 1 1 0-128 64 64 0 0 1 0 128z" p-id="40921" fill="#ffffff"></path></svg>',
+        voice:
+          '<svg t="1629478496186" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="64042" width="50" height="50"><path d="M462.06 142.1L284.12 320H80c-26.52 0-48 21.48-48 48v288c0 26.5 21.48 48 48 48h204.12l177.94 177.9c30.06 30.06 81.94 8.94 81.94-33.94V176.04c0-42.92-51.92-63.96-81.94-33.94zM992 512c0-127.06-64.12-243.88-171.54-312.48-22.38-14.28-52.06-7.64-66.24 14.92s-7.56 52.42 14.82 66.72C848.54 331.94 896 418.22 896 512s-47.46 180.06-126.96 230.84c-22.38 14.28-29 44.14-14.82 66.72 13.02 20.72 42.24 30.28 66.24 14.92C927.88 755.88 992 639.06 992 512z m-283.54-153.74c-23.16-12.66-52.38-4.32-65.22 18.9-12.78 23.22-4.32 52.4 18.9 65.22C687.96 456.56 704 483.26 704 512c0 28.76-16.04 55.44-41.84 69.62-23.22 12.82-31.68 42-18.9 65.22 12.86 23.32 42.1 31.6 65.22 18.9 56.46-31.1 91.54-90 91.54-153.76s-35.08-122.64-91.56-153.72z" p-id="64043" fill="#ffffff"></path></svg>'
       }
     }
   },
   methods: {
-    hideMask(e) {
-      e.currentTarget.classList.add('remove-mask')
+    hideMask(e, msgItemRef) {
+      const _target = e.currentTarget
+      _target.classList.add('remove-mask')
+      const msgItem = this.$refs[msgItemRef][0]
+      msgItem.classList.add('immovable')
+      setTimeout(() => {
+        _target.style.display = 'none'
+        msgItem.classList.remove('immovable')
+      }, 1000)
     },
     changeName(e) {
       this.memberName = e.currentTarget.innerText
@@ -327,13 +369,12 @@ export default {
 .msg-bubble {
   margin-top: 0.5em;
   position: relative;
-  width: 93%;
+  width: 97%;
   background-color: #f6f6f6;
   display: inline-block;
   font-size: 1em;
   border-radius: 2%;
   text-align: center;
-  padding: 0.5em;
 }
 .msg-bubble:after {
   content: ' ';
@@ -348,10 +389,6 @@ export default {
   border-left: 10px solid transparent;
   z-index: 0;
 }
-.msg-bubble img {
-  padding: 0.5em;
-  width: 80%;
-}
 /* 气泡mask相关css */
 .mask {
   width: 100%;
@@ -359,6 +396,9 @@ export default {
   position: absolute;
   border-radius: 2%;
   z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 @keyframes mask-slide {
   0% {
@@ -412,6 +452,13 @@ export default {
   z-index: 1;
 }
 /* 气泡内容相关css */
+.content-wrapper {
+  padding: 0.5em;
+}
+.msg-bubble .content-wrapper img {
+  padding: 0.5em;
+  width: 80%;
+}
 .msg-content {
   padding: 0.5em;
   text-align: left;
@@ -422,22 +469,27 @@ export default {
   outline: #8ec4e6 auto 1px;
 }
 
+.voice-wrapper {
+  height: 2em;
+}
 .volume-icon {
   background: #879fc1;
+  border: 3px solid #879fc1;
   border-radius: 100%;
-  width: 30px;
-  height: 30px;
-  line-height: 30px;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
   color: #fefefe;
   text-align: center;
   position: absolute;
-  left: 50%;
+  left: 48%;
   margin-left: -15px;
   font-size: 20px;
 }
 .voice-content {
-  margin-left: calc(50% + 25px);
+  margin-left: calc(48% + 25px);
   color: #879fc1;
   font-size: 20px;
+  line-height: 30px;
 }
 </style>
