@@ -109,7 +109,7 @@ export default {
         { name: '河田 陽菜', avatar: require('@/assets/img/avatar/hina.jpg') },
         { name: '小坂 菜緒', avatar: require('@/assets/img/avatar/nao.jpg') },
         { name: '富田 鈴花', avatar: require('@/assets/img/avatar/suzuka.jpg') },
-        { ame: '丹生 明里', avatar: require('@/assets/img/avatar/akari.jpg') },
+        { name: '丹生 明里', avatar: require('@/assets/img/avatar/akari.jpg') },
         { name: '濱岸 ひより', avatar: require('@/assets/img/avatar/hiyori.jpg') },
         { name: '松田 好花', avatar: require('@/assets/img/avatar/konoka.jpg') },
         { name: '宮田 愛萌', avatar: require('@/assets/img/avatar/manamo.jpg') },
