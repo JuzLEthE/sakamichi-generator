@@ -8,7 +8,7 @@
       <div class="talk-header" contenteditable="plaintext-only" @blur="changeName" v-text="memberName"></div>
       <draggable :disabled="dragDisabled" v-model="msgs" forceFallback="false" animation="500" group="msgs" filter=".immovable">
         <transition-group>
-          <div class="talk-item" v-for="item in msgs" :key="item.id" :ref="'item'+item.id">
+          <div class="talk-item" v-for="item in msgs" :key="item.id" :ref="'item' + item.id">
             <div class="talk-avatar" contenteditable="true" @drop="setAvatar($event)">
               <img :src="avartarSrc" />
             </div>
@@ -18,12 +18,12 @@
                 <div style="min-width: 30px" contenteditable="true" v-text="item.time"></div>
               </div>
               <div class="msg-bubble">
-                <div class="mask immovable" :class="item.type" @click="hideMask($event,'item'+item.id)" v-html="maskIcon[item.type]"></div>
+                <div class="mask immovable" :class="item.type" @click="hideMask($event, 'item' + item.id)" v-html="maskIcon[item.type]"></div>
                 <div class="content-wrapper">
                   <img @dblclick="removeImg($event, item)" hidden />
                   <div
                     class="msg-content"
-                    v-bind:style="{minHeight: item.type=='image'?'150px':'60px'}"
+                    v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '60px' }"
                     contenteditable="true"
                     v-if="item.type !== 'voice'"
                     @paste="contentPaste"
@@ -174,14 +174,12 @@ export default {
     setAvatar(e) {
       e.stopPropagation()
       e.preventDefault()
+      const _this = this
       const fileReader = new FileReader()
       fileReader.readAsDataURL(e.dataTransfer.files[0])
-      let imgEl = e.currentTarget.getElementsByTagName('img')[0]
       fileReader.addEventListener('load', function () {
-        // 读取完成
-        let res = fileReader.result
         // res是base64格式的图片
-        imgEl.src = res
+        _this.avartarSrc = fileReader.result
       })
     },
     addMsg(type) {
@@ -239,7 +237,7 @@ export default {
         let dataURL = canvas.toDataURL('image/png')
         setTimeout(() => {
           this.fileDownload(dataURL)
-        }, 100)
+        }, 500)
       })
     },
 
