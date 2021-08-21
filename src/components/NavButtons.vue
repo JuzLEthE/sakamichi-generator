@@ -37,18 +37,6 @@ export default {
 </script>
 
 <style scoped>
-.emoji {
-  display: inline-block !important;
-  height: 1em !important;
-  width: 1em !important;
-  margin: 0 0.05em 0 0.1em;
-  vertical-align: -0.1em;
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  transform: translate(0, 0) !important;
-}
-
 a {
   color: #157ab5;
 }
