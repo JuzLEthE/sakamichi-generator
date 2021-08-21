@@ -20,7 +20,7 @@
               <div class="msg-bubble">
                 <div class="mask immovable" :class="item.type" @click="hideMask($event, 'item' + item.id)" v-html="maskIcon[item.type]"></div>
                 <div class="content-wrapper">
-                  <img @dblclick="removeImg($event, item)" hidden />
+                  <img @dblclick="removeImg($event, item)" hidden crossorigin="anonymous" />
                   <div
                     class="msg-content"
                     v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '20px' }"
@@ -52,6 +52,7 @@ import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
 import NavButtons from '../components/NavButtons.vue'
+import '@/assets/css/common.css'
 export default {
   name: 'Home',
   // 注册draggable组件
@@ -206,7 +207,7 @@ export default {
     },
     toImage() {
       html2canvas(this.$refs.imageWrapper, {
-        allowTaint: true,
+        useCORS: true,
         scale: 4,
         dpi: 300
       }).then(canvas => {
@@ -243,7 +244,11 @@ export default {
     },
     handleEmojiLink(plainText) {
       let exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i
-      return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"))
+      return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"), {
+        attributes: () => {
+          return { crossorigin: 'anonymous' }
+        }
+      })
     }
   }
 }
@@ -423,6 +428,7 @@ export default {
   line-height: 1.8em;
   -webkit-user-modify: 'read-write-plaintext-only';
 }
+
 .msg-content:focus-visible {
   outline: #8ec4e6 auto 1px;
 }
