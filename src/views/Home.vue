@@ -23,7 +23,7 @@
                   <img @dblclick="removeImg($event, item)" hidden />
                   <div
                     class="msg-content"
-                    v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '60px' }"
+                    v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '20px' }"
                     contenteditable="true"
                     v-if="item.type !== 'voice'"
                     @paste="contentPaste"
@@ -42,39 +42,7 @@
       </draggable>
     </div>
 
-    <nav class="menu">
-      <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
-      <label class="menu-open-button" for="menu-open">
-        <span class="lines line-1"></span>
-        <span class="lines line-2"></span>
-        <span class="lines line-3"></span>
-      </label>
-
-      <!-- 新增消息 -->
-      <a href="#" @click="addMsg('normal')" class="menu-item blue">
-        <i class="fa fa-solid fa-plus"></i>
-      </a>
-      <!-- 新增仅图片消息 -->
-      <a href="#" class="menu-item green" @click="addMsg('image')">
-        <i class="fa fa-solid fa-image"></i>
-      </a>
-      <!-- 选择成员 -->
-      <a href="#" class="menu-item red">
-        <i class="fa fa-solid fa-user"></i>
-      </a>
-      <!-- 将html保存成图片 -->
-      <a href="#" @click="toImage" class="menu-item purple">
-        <i class="fa fa-solid fa-download"></i>
-      </a>
-      <!-- 删除一条 -->
-      <a href="#" @click="removeMsg" class="menu-item orange">
-        <i class="fa fa-solid fa-trash"></i>
-      </a>
-      <!-- 新增音频消息 -->
-      <a href="#" @click="addMsg('voice')" class="menu-item lightblue">
-        <i class="fa fa-solid fa-microphone"></i>
-      </a>
-    </nav>
+    <nav-buttons :buttonConfigs="buttonConfig" />
   </div>
 </template>
 
@@ -83,11 +51,12 @@
 import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
-import '@/assets/css/nav.css'
+import NavButtons from '../components/NavButtons.vue'
 export default {
   name: 'Home',
   // 注册draggable组件
   components: {
+    NavButtons,
     draggable
   },
   data() {
@@ -148,7 +117,15 @@ export default {
           '<svg t="1629478159872" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="40920" width="50" height="50"><path d="M213.333333 473.6l85.333334-85.333333 234.666666 234.666666 149.333334-149.333333 128 128V213.333333H213.333333v260.266667zM170.666667 128h682.666666a42.666667 42.666667 0 0 1 42.666667 42.666667v682.666666a42.666667 42.666667 0 0 1-42.666667 42.666667H170.666667a42.666667 42.666667 0 0 1-42.666667-42.666667V170.666667a42.666667 42.666667 0 0 1 42.666667-42.666667z m490.666666 298.666667a64 64 0 1 1 0-128 64 64 0 0 1 0 128z" p-id="40921" fill="#ffffff"></path></svg>',
         voice:
           '<svg t="1629478496186" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="64042" width="50" height="50"><path d="M462.06 142.1L284.12 320H80c-26.52 0-48 21.48-48 48v288c0 26.5 21.48 48 48 48h204.12l177.94 177.9c30.06 30.06 81.94 8.94 81.94-33.94V176.04c0-42.92-51.92-63.96-81.94-33.94zM992 512c0-127.06-64.12-243.88-171.54-312.48-22.38-14.28-52.06-7.64-66.24 14.92s-7.56 52.42 14.82 66.72C848.54 331.94 896 418.22 896 512s-47.46 180.06-126.96 230.84c-22.38 14.28-29 44.14-14.82 66.72 13.02 20.72 42.24 30.28 66.24 14.92C927.88 755.88 992 639.06 992 512z m-283.54-153.74c-23.16-12.66-52.38-4.32-65.22 18.9-12.78 23.22-4.32 52.4 18.9 65.22C687.96 456.56 704 483.26 704 512c0 28.76-16.04 55.44-41.84 69.62-23.22 12.82-31.68 42-18.9 65.22 12.86 23.32 42.1 31.6 65.22 18.9 56.46-31.1 91.54-90 91.54-153.76s-35.08-122.64-91.56-153.72z" p-id="64043" fill="#ffffff"></path></svg>'
-      }
+      },
+      buttonConfig: [
+        { color: 'blue', icon: 'fa fa-solid fa-plus', func: 'addMsg', args: ['normal'] },
+        { color: 'green', icon: 'fa fa-solid fa-image', func: 'addMsg', args: ['image'] },
+        { color: 'red', icon: 'fa fa-solid fa-user' },
+        { color: 'purple', icon: 'fa fa-solid fa-download', func: 'toImage', args: [] },
+        { color: 'orange', icon: 'fa fa-solid fa-trash', func: 'removeMsg', args: [] },
+        { color: 'lightblue', icon: 'fa fa-solid fa-microphone', func: 'addMsg', args: ['voice'] }
+      ]
     }
   },
   methods: {
@@ -204,7 +181,6 @@ export default {
       fileReader.readAsDataURL(e.dataTransfer.files[0])
       let imgEl = e.currentTarget.getElementsByTagName('img')[0]
       if (item.type === 'image') {
-        console.log(e.currentTarget)
         let content = e.currentTarget.getElementsByClassName('msg-content')[0]
         content.hidden = 'hidden'
       }
@@ -430,7 +406,7 @@ export default {
   right: auto;
   top: 10px;
   bottom: auto;
-  border-left: 10px solid transparent;
+  border-left: 11px solid transparent;
   z-index: 1;
 }
 /* 气泡内容相关css */

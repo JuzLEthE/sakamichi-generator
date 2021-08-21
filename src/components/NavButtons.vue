@@ -1,3 +1,42 @@
+<template>
+  <nav class="menu">
+    <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
+    <label class="menu-open-button" for="menu-open">
+      <span class="lines line-1"></span>
+      <span class="lines line-2"></span>
+      <span class="lines line-3"></span>
+    </label>
+
+    <a
+      href="#"
+      v-for="(item,index) in buttonConfigs"
+      :key="index"
+      class="menu-item"
+      :class="item.color"
+      @click="handleClick(item.func,...item.args)"
+    >
+      <i :class="item.icon"></i>
+    </a>
+  </nav>
+</template>
+
+<script>
+export default {
+  name: 'NavButtons',
+  props: {
+    buttonConfigs: Array
+  },
+  methods: {
+    handleClick(funcName, ...args) {
+      if (funcName) {
+        this.$parent[funcName](...args)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped>
 .emoji {
   display: inline-block !important;
   height: 1em !important;
@@ -301,3 +340,4 @@ a {
 .credit a:hover {
   text-decoration: underline;
 }
+</style>
