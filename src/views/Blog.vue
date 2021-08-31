@@ -1,7 +1,11 @@
 <template>
   <div id="blog">
+    <div style="position:fixed;left:50px;top:50px">
+      <input v-model="id" />
+      <button @click="getDetail">get</button>
+    </div>
     <div class="container" ref="imageWrapper">
-      <div class="main-contents" v-html="html"></div>
+      <div class="main-contents" v-html="html" contenteditable="true"></div>
     </div>
 
     <nav-buttons :buttonConfigs="buttonConfig" />
@@ -23,6 +27,7 @@ export default {
   },
   data() {
     return {
+      id: '',
       dragDisabled: false,
       memberName: '日向坂46',
       avartarSrc: require('@/assets/img/avatar/hnt_logo.svg'),
@@ -68,6 +73,22 @@ export default {
     }
   },
   methods: {
+    getDetail() {
+      console.log(this.id)
+      fetch('http://localhost:19211/blog/detail/' + this.id, {
+        headers: {
+          method: 'GET',
+          mode: 'cors',
+          'content-type': 'application/json'
+        }
+      })
+        .then(res => {
+          return res.json()
+        })
+        .then(json => {
+          this.html = json.content
+        })
+    },
     setAvatar(e) {
       e.stopPropagation()
       e.preventDefault()
