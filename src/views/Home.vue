@@ -67,7 +67,7 @@ export default {
   cursor: pointer;
   position: relative;
   background-size: 200% 200%;
-  animation: gradient 8s ease infinite alternate;
+  animation: gradient 8s ease infinite;
 }
 
 .modules > div:hover {
