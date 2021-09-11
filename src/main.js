@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
+
 import router from './router'
 
 import 'normalize.css/normalize.css'
-import 'font-awesome/css/font-awesome.min.css'
 
 Vue.config.productionTip = false
 Date.prototype.format = function(fmt) {
@@ -26,7 +26,13 @@ Date.prototype.format = function(fmt) {
   }
   return fmt
 }
+
+Vue.component('vuedraggable', window.vuedraggable)
+
 new Vue({
   router,
-  render: h => h(App)
+  render: h => h(App),
+  components: {
+    draggable: window['vuedraggable']
+  }
 }).$mount('#app')

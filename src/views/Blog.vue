@@ -16,13 +16,16 @@
       </div>
 
       <div class="p-blog-article__head">
-        <div class="c-blog-article__title" v-text="detail.title"></div>
+        <div class="c-blog-article__title" v-html="detail.title"></div>
         <div class="p-blog-article__info">
           <div class="c-blog-article__date" v-text="detail.time"></div>
           <div class="c-blog-article__name" v-text="detail.name"></div>
         </div>
       </div>
+
       <div class="c-blog-article__text" v-html="detail.content" contenteditable="true"></div>
+
+      <footer></footer>
     </div>
 
     <nav-buttons :buttonConfigs="buttonConfig" />
@@ -30,20 +33,18 @@
 </template>
 
 <script>
-// 导入draggable组件
-// import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
 import NavButtons from '../components/NavButtons.vue'
 import '@/assets/css/blog.css'
 export default {
   name: 'Blog',
-  // 注册draggable组件
   components: {
     NavButtons
   },
   data() {
     return {
+      baseUrl: '/api/',
       id: '',
       dragDisabled: false,
       buttonConfig: [
@@ -55,7 +56,8 @@ export default {
         name: '日向坂46',
         avatar: 'https://cdn.hinatazaka46.com/images/14/cf8/a6b6ee6cf204f3258a046340a262b/400_320_102400.jpg',
         time: '2021.9.4 10:43',
-        content: '目前后端还没上，上了之后需要浏览器关闭安全限制才可以转图片，可以看下 https://zhuanlan.zhihu.com/p/258076891'
+        content:
+          '1.将原博客地址栏中/diary/detail/后面的数字输入左边input中，点get爬取。2.因为图片涉及到跨域，需要浏览器关闭安全限制才可以转图片，还有就是等图片加载完再转。可以看下 https://www.cnblogs.com/laden666666/p/5544572.html 和 https://zhuanlan.zhihu.com/p/258076891 '
       }
     }
   },
@@ -71,8 +73,7 @@ export default {
       }
     },
     getDetail() {
-      console.log(this.id)
-      fetch('http://localhost:19211/blog/detail/' + this.id, {
+      fetch(this.baseUrl + 'blog/detail/' + this.id, {
         headers: {
           method: 'GET',
           mode: 'cors',
@@ -83,7 +84,11 @@ export default {
           return res.json()
         })
         .then(json => {
-          this.detail = json
+          this.detail.name = json.name
+          this.detail.avatar = json.avatar
+          this.detail.time = json.time
+          this.detail.content = twemoji.parse(json.content)
+          this.detail.title = twemoji.parse(json.title)
         })
     },
     setAvatar(e) {
@@ -236,6 +241,7 @@ export default {
 }
 .c-blog-article__text {
   margin-top: 10px;
+  flex: 1;
   padding: 50px;
   color: #636767;
   line-height: 1.75;

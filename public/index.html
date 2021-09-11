@@ -1,25 +1,57 @@
 <!DOCTYPE html>
 <html lang="">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script
+      crossorigin="anonymous"
+      integrity="sha384-OZmxTjkv7EQo5XDMPAmIkkvywVeXw59YyYh6zq8UKfkbor13jS+5p8qMTBSA1q+F"
+      src="https://lib.baomitu.com/vue/2.6.11/vue.min.js"
+    ></script>
+    <script
+      crossorigin="anonymous"
+      integrity="sha512-Y1hQd9iqAxeMSJOqHpbFD1AljkJ9w0Igux1GYZhYH36oNFyLYtdwpNHTq17V5spP1jM8a7zimyvyHpR/4WcVDQ=="
+      src="https://lib.baomitu.com/vue-router/3.2.0/vue-router.min.js"
+    ></script>
+    <link
+      crossorigin="anonymous"
+      integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+      href="https://lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="https://twemoji.maxcdn.com/v/13.1.0/twemoji.min.js"
+      integrity="sha384-gPMUf7aEYa6qc3MgqTrigJqf4gzeO6v11iPCKv+AP2S4iWRWCoWyiR+Z7rWHM/hU"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      crossorigin="anonymous"
+      integrity="sha512-zYXldzJsDrNKV+odAwFYiDXV2Cy37cwizT+NkuiPGsa9X1dOz04eHvUWVuxaJ299GvcJT31ug2zO4itXBjFx4w=="
+      src="https://lib.baomitu.com/Sortable/1.14.0/Sortable.min.js"
+    ></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/Vue.Draggable/2.22.0/vuedraggable.umd.min.js"></script>
+    <script
+      crossorigin="anonymous"
+      integrity="sha512-RGZt6PJZ2y5mdkLGwExIfOMlzRdkMREWobAwzTX4yQV0zdZfxBaYLJ6nPuMd7ZPXVzBQL6XAJx0iDXHyhuTheQ=="
+      src="https://lib.baomitu.com/html2canvas/1.2.1/html2canvas.min.js"
+    ></script>
 
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:100,300,400,500,700,900">
-  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-  <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
-  <title>
-    <%= htmlWebpackPlugin.options.title %>
-  </title>
-</head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Sans+SC:100,300,400,500,700,900" />
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+    <title>
+      <%= htmlWebpackPlugin.options.title %>
+    </title>
+  </head>
 
-<body>
-  <noscript>
-    <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
-        Please enable it to continue.</strong>
-  </noscript>
-  <div id="app"></div>
-  <!-- built files will be auto injected -->
-</body>
-
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to
+        continue.</strong
+      >
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
 </html>

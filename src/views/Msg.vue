@@ -49,7 +49,6 @@
 
 <script>
 // 导入draggable组件
-import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
 import NavButtons from '../components/NavButtons.vue'
@@ -58,8 +57,7 @@ export default {
   name: 'Msg',
   // 注册draggable组件
   components: {
-    NavButtons,
-    draggable
+    NavButtons
   },
   data() {
     return {
@@ -246,6 +244,7 @@ export default {
       document.execCommand('insertHTML', false, this.handleEmojiLink(pastedText))
     },
     handleEmojiLink(plainText) {
+      console.log('123')
       let exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i
       return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"), {
         attributes: () => {
@@ -258,13 +257,17 @@ export default {
 </script>
 
 <style scoped>
+@font-face {
+  font-family: u0800;
+  src: url('../assets/css/u0800.woff');
+}
 #home {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0;
   min-height: 100vh;
-  font-family: 'Noto Sans SC';
+  font-family: 'Noto Sans SC', u0800;
 }
 .container {
   margin: 20px;

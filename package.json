@@ -9,23 +9,24 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "font-awesome": "^4.7.0",
     "html2canvas": "^1.2.1",
     "normalize.css": "^8.0.1",
     "twemoji": "^13.1.0",
     "vue": "^2.6.11",
-    "vue-router": "^3.2.0",
-    "vuedraggable": "^2.24.3"
+    "vue-router": "^3.2.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.15.5",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "^4.5.13",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-transform-runtime": "^6.23.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-bundle-analyzer": "^4.4.2"
   },
   "eslintConfig": {
     "root": true,

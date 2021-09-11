@@ -15,12 +15,12 @@
       </div>
       <div class="module3">
         <div class="description">
-          <h2>coming...</h2>
+          <h2>coming soon...</h2>
         </div>
       </div>
       <div class="module4">
         <div class="description">
-          <h2>coming...</h2>
+          <h2>coming soon...</h2>
         </div>
       </div>
     </div>
