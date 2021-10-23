@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <a href="https://github.com/JuzLEthE/sakamichi-generator" class="github-corner" aria-label="View source on GitHub">
+    <a href="https://github.com/JuzLEthE/sakamichi-generator" class="github-corner" target="_blank" aria-label="View source on GitHub">
       <svg
         width="80"
         height="80"

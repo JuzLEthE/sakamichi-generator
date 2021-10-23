@@ -3,19 +3,20 @@
     <div class="modules">
       <div class="module1" @click="to('msg')">
         <div class="description">
-          <h2>MSG生成器</h2>
+          <h2>日向坂MSG生成器</h2>
           <p>message图制作</p>
         </div>
       </div>
-      <div class="module2" @click="to('blog')">
+      <div class="module2" @click="to('msg/sakura')">
+        <div class="description">
+          <h2>樱坂MSG生成器</h2>
+          <p>message图制作</p>
+        </div>
+      </div>
+      <div class="module3" @click="to('blog')">
         <div class="description">
           <h2>blog生成器</h2>
           <p>还没做好</p>
-        </div>
-      </div>
-      <div class="module3">
-        <div class="description">
-          <h2>coming soon...</h2>
         </div>
       </div>
       <div class="module4">
@@ -59,6 +60,10 @@ export default {
   grid-row-gap: 30px;
 }
 
+h2 {
+  font-size: 1.3em;
+}
+
 .modules > div {
   border-radius: 10px;
   box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, 0.5);
@@ -98,10 +103,11 @@ export default {
   grid-area: 1 / 1 / 3 / 2;
 }
 .module2 {
-  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
+  background: linear-gradient(-45deg, #a254a5, #f390b1, white);
   grid-area: 1 / 2 / 3 / 3;
 }
 .module3 {
+  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
   grid-area: 3 / 1 / 5 / 3;
 }
 .module4 {

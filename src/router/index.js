@@ -12,9 +12,13 @@ const routes = [
     component: Home
   },
   {
-    path: '/msg',
+    path: '/msg/:group',
     name: 'Msg',
     component: Msg
+  },
+  {
+    path: '/msg',
+    redirect: '/msg/hinata'
   },
   {
     path: '/blog',
