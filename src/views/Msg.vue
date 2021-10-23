@@ -74,8 +74,8 @@ export default {
     return {
       dragDisabled: false,
       isSakura: false,
-      memberName: '日向坂46',
-      avartarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      hinataAvatar: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.png'),
       hinataMember: [
         { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/hinata/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/hinata/yuuka.jpg') },
@@ -140,25 +140,26 @@ export default {
       ]
     }
   },
-  watch: {
-    isSakura(newVal, oldVal) {
-      if (newVal != oldVal) {
-        if (newVal) {
-          this.memberName = '櫻坂46'
-          this.avartarSrc = require('@/assets/img/avatar/sakura/sakura_logo.svg')
-        } else {
-          this.memberName = '日向坂46'
-          this.avartarSrc = require('@/assets/img/avatar/hinata/hnt_logo.svg')
-        }
-      }
-    }
-  },
   computed: {
+    memberName() {
+      if (this.isSakura) {
+        return '櫻坂46'
+      } else {
+        return '日向坂46'
+      }
+    },
     members() {
       if (this.isSakura) {
         return this.sakuraMember
       } else {
         return this.hinataMember
+      }
+    },
+    avartarSrc() {
+      if (this.isSakura) {
+        return this.sakuraAvatar
+      } else {
+        return this.hinataAvatar
       }
     }
   },
