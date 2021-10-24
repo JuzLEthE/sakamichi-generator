@@ -74,8 +74,9 @@ export default {
     return {
       dragDisabled: false,
       isSakura: false,
-      hinataAvatar: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      memberName: '日向坂46',
       sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.png'),
+      avartarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
       hinataMember: [
         { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/hinata/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/hinata/yuuka.jpg') },
@@ -141,25 +142,11 @@ export default {
     }
   },
   computed: {
-    memberName() {
-      if (this.isSakura) {
-        return '櫻坂46'
-      } else {
-        return '日向坂46'
-      }
-    },
     members() {
       if (this.isSakura) {
         return this.sakuraMember
       } else {
         return this.hinataMember
-      }
-    },
-    avartarSrc() {
-      if (this.isSakura) {
-        return this.sakuraAvatar
-      } else {
-        return this.hinataAvatar
       }
     }
   },
@@ -200,7 +187,6 @@ export default {
       })
     },
     addMsg(type) {
-      console.log(type)
       let msg = {
         id: Date.now(),
         time: new Date().format('MM/dd hh:mm'),
@@ -281,7 +267,6 @@ export default {
       document.execCommand('insertHTML', false, this.handleEmojiLink(pastedText))
     },
     handleEmojiLink(plainText) {
-      console.log('123')
       let exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/i
       return twemoji.parse(plainText.replace(exp, "<a href='$1'>$1</a>"), {
         attributes: () => {
@@ -293,6 +278,8 @@ export default {
   mounted() {
     if (this.$route.params.group == 'sakura') {
       this.isSakura = true
+      this.memberName = '櫻坂46'
+      this.avartarSrc = this.sakuraAvatar
     }
   }
 }
