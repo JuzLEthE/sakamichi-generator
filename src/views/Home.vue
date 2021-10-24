@@ -18,9 +18,13 @@
           <h2>coming soon...</h2>
         </div>
       </div>
-      <div class="module4">
+      <div class="module4" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
-          <h2>coming soon...</h2>
+          <h2>预览版</h2>
+          <h4>2021年10月23日</h4>
+          <p>1.MSG生成器取消最低高度。</p>
+          <p>2.MSG生成器取消消息气泡圆角。</p>
+          <p>3.MSG生成器增加樱坂46样式。</p>
         </div>
       </div>
     </div>
@@ -105,6 +109,7 @@ export default {
   grid-area: 3 / 1 / 5 / 3;
 }
 .module4 {
+  background: linear-gradient(-45deg, #f390b1, white, #23a6d5);
   grid-area: 1 / 3 / 5 / 5;
 }
 @keyframes gradient {
