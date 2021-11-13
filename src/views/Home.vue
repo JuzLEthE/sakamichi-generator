@@ -3,25 +3,33 @@
     <div class="modules">
       <div class="module1" @click="to('msg')">
         <div class="description">
-          <h2>MSG生成器</h2>
+          <h2>日向坂MSG生成器</h2>
           <p>message图制作</p>
         </div>
       </div>
-      <div class="module2" @click="to('blog')">
+      <div class="module2" @click="to('msg/sakura')">
+        <div class="description">
+          <h2>樱坂MSG生成器</h2>
+          <p>message图制作</p>
+        </div>
+      </div>
+      <div class="module3" @click="to('blog')">
         <div class="description">
           <h2>blog生成器</h2>
           <p>还没做好</p>
         </div>
       </div>
-      <div class="module3">
-        <div class="description">
-          <h2>coming soon...</h2>
-        </div>
-      </div>
       <div class="module4" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
           <h2>预览版</h2>
-          <h4>2021年10月23日</h4>
+          <h4>2021年11月13日</h4>
+          <p>1.调整字体: 'PingFang SC', 'Noto Sans SC Regular'</p>
+          <p>2.调整成员选择方式。</p>
+          <p>3.增加头像与名称本地缓存。</p>
+          <p>
+            <br />
+          </p>
+          <h4>已同步到发布版的内容:</h4>
           <p>1.MSG生成器取消最低高度。</p>
           <p>2.MSG生成器取消消息气泡圆角。</p>
           <p>3.MSG生成器增加樱坂46样式。</p>
@@ -63,6 +71,10 @@ export default {
   grid-row-gap: 30px;
 }
 
+h2 {
+  font-size: 1.3em;
+}
+
 .modules > div {
   border-radius: 10px;
   box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, 0.5);
@@ -102,10 +114,11 @@ export default {
   grid-area: 1 / 1 / 3 / 2;
 }
 .module2 {
-  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
+  background: linear-gradient(-45deg, #a254a5, #f390b1, white);
   grid-area: 1 / 2 / 3 / 3;
 }
 .module3 {
+  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
   grid-area: 3 / 1 / 5 / 3;
 }
 .module4 {
