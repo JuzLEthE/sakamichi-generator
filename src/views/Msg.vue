@@ -1,9 +1,5 @@
 <template>
   <div id="home">
-    <select v-model="memberName" @change="selectMember" v-show="!isSakura">
-      <option disabled value="请选择成员">请选择成员</option>
-      <option v-for="member in members" :key="member.name">{{ member.name }}</option>
-    </select>
     <div class="container" ref="imageWrapper">
       <div
         v-bind:class="['talk-header'+(isSakura?'-sakura':'')]"
@@ -16,7 +12,7 @@
         <transition-group>
           <div class="talk-item" v-for="item in msgs" :key="item.id" :ref="'item' + item.id">
             <div class="talk-avatar" contenteditable="true" @drop="setAvatar($event)">
-              <img :src="avartarSrc" />
+              <img :src="avatarSrc" />
             </div>
             <div class="talk-msg" @drop="addImage($event, item)">
               <div class="msg-info">
@@ -54,6 +50,35 @@
       </draggable>
     </div>
 
+    <nav-card class="nav-card" :cards="settingCards" :width="270" :height="340" :isSakura="isSakura">
+      <div slot="成员" class="member-grid">
+        <div v-for="member in (isSakura? []:hinataMember)" :key="member.name">
+          <div class="select-avatar-wrapper">
+            <img :src="member.avatar" class="select-avatar" @click="chooseMember(member.name,member.avatar,false)" />
+          </div>
+          <p>{{member.name}}</p>
+        </div>
+      </div>
+      <div slot="常用">
+        <div class="member-grid">
+          <div v-for="(member,index) in recentMembers" :key="index">
+            <div class="select-avatar-wrapper">
+              <img
+                :src="member.avatar"
+                class="select-avatar"
+                @click="chooseMember(member.name,member.avatar,true)"
+                @dblclick="removeCache(index)"
+              />
+            </div>
+            <p>{{member.name}}</p>
+          </div>
+        </div>
+        <p v-show="cacheable&&!recentMembers.length">1.最多可缓存6个,超过后删除最早创建的。2.双击删除该缓存。3.缓存质量可能有损。4.无痕模式下关闭后缓存消失。</p>
+        <p v-show="!cacheable">当前浏览器设置不支持使用localStorage进行缓存。</p>
+        <button @click="cacheAvatar()" style="width:135px;height:30px;position:absolute;bottom:0;left:0;cursor: pointer">缓存</button>
+        <button @click="clearCache()" style="width:135px;height:30px;position:absolute;bottom:0;right:0;cursor: pointer">清空</button>
+      </div>
+    </nav-card>
     <nav-buttons :buttonConfigs="buttonConfig" />
   </div>
 </template>
@@ -62,21 +87,26 @@
 // 导入draggable组件
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
-import NavButtons from '../components/NavButtons.vue'
+import NavButtons from '../components/NavButtons'
+import NavCard from '../components/NavCard'
 import '@/assets/css/common.css'
 export default {
   name: 'Msg',
   // 注册draggable组件
   components: {
-    NavButtons
+    NavButtons,
+    NavCard
   },
   data() {
     return {
+      settingCards: [{ name: '成员' }, { name: '常用' }],
+      recentMembers: [],
       dragDisabled: false,
       isSakura: false,
+      cacheable: false,
       memberName: '日向坂46',
       sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.png'),
-      avartarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      avatarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
       hinataMember: [
         { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/hinata/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/hinata/yuuka.jpg') },
@@ -169,11 +199,10 @@ export default {
     changeName(e) {
       this.memberName = e.currentTarget.innerText
     },
-    selectMember() {
-      const selected = this.members.find(item => {
-        return item.name === this.memberName
-      })
-      this.avartarSrc = selected.avatar
+    chooseMember(name, src, isCache) {
+      this.memberName = name
+      this.avatarSrc = src
+      this.isCache = isCache
     },
     setAvatar(e) {
       e.stopPropagation()
@@ -183,7 +212,8 @@ export default {
       fileReader.readAsDataURL(e.dataTransfer.files[0])
       fileReader.addEventListener('load', function () {
         // res是base64格式的图片
-        _this.avartarSrc = fileReader.result
+        _this.avatarSrc = fileReader.result
+        _this.isCache = false
       })
     },
     addMsg(type) {
@@ -273,13 +303,74 @@ export default {
           return { crossorigin: 'anonymous' }
         }
       })
+    },
+    localStorageAvailable() {
+      if (window.Storage && window.localStorage && window.localStorage instanceof Storage) {
+        return true
+      } else {
+        return false
+      }
+    },
+    cacheAvatar() {
+      if (this.cacheable) {
+        const name = this.memberName
+        const src = this.getAvatarDataUrl()
+        if (this.recentMembers.length >= 6) {
+          this.recentMembers.pop()
+        }
+        this.recentMembers.unshift({ name: name, avatar: src })
+        try {
+          localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+        } catch (e) {
+          alert('缓存失败')
+          console.log('Storage failed: ' + e)
+        }
+      }
+    },
+    clearCache() {
+      if (this.cacheable) {
+        this.recentMembers = []
+        try {
+          localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+        } catch (e) {
+          alert('缓存失败')
+          console.log('Storage failed: ' + e)
+        }
+      }
+    },
+    getAvatarDataUrl() {
+      const img = document.querySelector('.talk-item .talk-avatar img')
+      const ratio = 4
+      let imgCanvas = document.createElement('canvas')
+      let imgContext = imgCanvas.getContext('2d')
+      imgCanvas.height = img.height * ratio
+      imgCanvas.width = img.width * ratio
+      imgContext.drawImage(img, 0, 0, img.width * ratio, img.height * ratio)
+      return imgCanvas.toDataURL('image/png')
+    },
+    removeCache(index) {
+      this.recentMembers.splice(index, 1)
+      try {
+        localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+      } catch (e) {
+        alert('缓存失败')
+        console.log('Storage failed: ' + e)
+      }
     }
   },
   mounted() {
     if (this.$route.params.group == 'sakura') {
       this.isSakura = true
       this.memberName = '櫻坂46'
-      this.avartarSrc = this.sakuraAvatar
+      this.avatarSrc = this.sakuraAvatar
+    }
+    const isSakura = this.isSakura
+    if (this.localStorageAvailable()) {
+      this.cacheable = true
+      let recentCache = JSON.parse(localStorage.getItem((isSakura ? 'sakura' : 'hinata') + 'RecentMembers'))
+      if (recentCache && recentCache instanceof Array) {
+        this.recentMembers = recentCache
+      }
     }
   }
 }
@@ -296,7 +387,42 @@ export default {
   align-items: center;
   margin: 0;
   min-height: 100vh;
-  font-family: 'Noto Sans SC', u0800;
+  font-family: 'PingFang SC', 'Noto Sans SC Regular', u0800;
+}
+
+.nav-card {
+  bottom: 700px;
+  right: 57px;
+  position: fixed;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow: auto;
+  height: inherit;
+  column-gap: 10px;
+  text-align: center;
+}
+
+.select-avatar-wrapper {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  margin: 5px auto;
+
+  border-radius: 50%;
+}
+
+.select-avatar {
+  width: 100%;
+
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.select-avatar:hover {
+  cursor: pointer;
 }
 
 .container {
