@@ -25,6 +25,19 @@
         </div>
       </div>
     </div>
+    <footer class="login-footer login-flex" height="40px">
+      <a href="https://beian.miit.gov.cn/" target="_blank" rel="nofollow">
+        <p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">鲁ICP备2021003532号-1</p>
+      </a>
+      <a
+        target="_blank"
+        href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=37040302000156"
+        style="display:inline-block;text-decoration:none;height:20px;line-height:20px;margin-left:10px"
+      >
+        <img :src="beianImg" style="float:left;" />
+        <p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#939393;">鲁公网安备 37040302000156号</p>
+      </a>
+    </footer>
   </div>
 </template>
 
