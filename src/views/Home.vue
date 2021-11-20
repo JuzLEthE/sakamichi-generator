@@ -56,6 +56,19 @@ export default {
 </script>
 
 <style>
+.login-footer {
+  color: white;
+  background: #333e46;
+  box-shadow: -5px 5px 10px #333e46, 5px -5px 10px #333e46;
+  z-index: 1;
+  width: 100%;
+  position: absolute;
+  text-align: center;
+  bottom: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 #home {
   min-height: 100vh;
   margin: 0;
