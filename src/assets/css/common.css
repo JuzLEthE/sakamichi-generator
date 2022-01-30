@@ -9,3 +9,6 @@
   top: auto !important;
   transform: translate(0, 0) !important;
 }
+a {
+  color: #39c9d2;
+}
