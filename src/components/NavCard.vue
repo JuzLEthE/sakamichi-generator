@@ -4,7 +4,7 @@
       <!--tab section 1-->
       <div v-for="item in cards" :key="item.name">
         <input type="radio" name="tab-radio" class="tab-radio" :id="item.name" checked />
-        <label :for="item.name" class="tab-handler" v-bind:class="{'sakura':isSakura}">{{item.name}}</label>
+        <label :for="item.name" v-bind:class="['tab-handler',group]">{{item.name}}</label>
         <div class="tab-content" v-bind:style="[widthPx,heightPx]">
           <slot :name="item.name"></slot>
         </div>
@@ -35,7 +35,7 @@ export default {
     cards: Array,
     width: Number,
     height: Number,
-    isSakura: Boolean
+    group: String
   },
 
   data() {
@@ -84,6 +84,9 @@ export default {
 
 .tab-radio:checked + .sakura {
   background-color: #ea94ad;
+}
+.tab-radio:checked + .nogi {
+  background-color: #933fb9;
 }
 .tab-radio:checked + .tab-handler + .tab-content {
   visibility: visible;

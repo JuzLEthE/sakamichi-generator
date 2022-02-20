@@ -42,10 +42,11 @@
 </template>
 
 <script>
+import beianImg from '@/assets/img/beian.png'
 export default {
   name: 'Home',
   data() {
-    return {}
+    return { beianImg: beianImg }
   },
   methods: {
     to(target) {

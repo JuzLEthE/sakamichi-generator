@@ -2,7 +2,7 @@
   <div id="home">
     <div class="container" ref="imageWrapper">
       <div
-        v-bind:class="['talk-header'+(isSakura?'-sakura':'')]"
+        :class="['talk-header','talk-header-'+group]"
         contenteditable="plaintext-only"
         spellcheck="false"
         @blur="changeName"
@@ -22,7 +22,7 @@
               <div class="msg-bubble">
                 <div
                   class="immovable"
-                  v-bind:class="[item.type+(isSakura?'-sakura':''),isSakura?'mask-sakura':'mask']"
+                  v-bind:class="[item.type,item.type+'-'+group,'mask','mask-'+group]"
                   @click="hideMask($event, 'item' + item.id)"
                   v-html="maskIcon[item.type]"
                 ></div>
@@ -38,7 +38,7 @@
                   >{{ item.content }}</div>
                   <div class="msg-content" v-if="item.type === 'voice'">
                     <div class="voice-wrapper">
-                      <i class="fa fa-solid fa-volume-up" v-bind:class="['volume-icon'+(isSakura?'-sakura':'')]"></i>
+                      <i class="fa fa-solid fa-volume-up" v-bind:class="['volume-icon','volume-icon-'+group]"></i>
                       <div class="voice-content" contenteditable="true" spellcheck="false" v-text="item.content"></div>
                     </div>
                   </div>
@@ -50,9 +50,9 @@
       </draggable>
     </div>
 
-    <nav-card class="nav-card" :cards="settingCards" :width="270" :height="340" :isSakura="isSakura">
+    <nav-card class="nav-card" :cards="settingCards" :width="270" :height="340" :group="group">
       <div slot="成员" class="member-grid">
-        <div v-for="member in (isSakura? []:hinataMember)" :key="member.name">
+        <div v-for="member in members" :key="member.name">
           <div class="select-avatar-wrapper">
             <img :src="member.avatar" class="select-avatar" @click="chooseMember(member.name,member.avatar,false)" />
           </div>
@@ -102,11 +102,12 @@ export default {
       settingCards: [{ name: '成员' }, { name: '常用' }],
       recentMembers: [],
       dragDisabled: false,
-      isSakura: false,
+      group: 'hinata',
       cacheable: false,
       memberName: '日向坂46',
-      sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.png'),
-      avatarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      avatarSrc: require('@/assets/img/avatar/hinata/hinata_logo.png'),
+      sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.jpg'),
+      nogiAvatar: require('@/assets/img/avatar/nogi/nogi_logo.png'),
       hinataMember: [
         { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/hinata/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/hinata/yuuka.jpg') },
@@ -132,6 +133,7 @@ export default {
         { name: '山口 陽世', avatar: require('@/assets/img/avatar/hinata/haruyo.jpg') }
       ],
       sakuraMember: [],
+      nogiMember: [],
       // 定义要被拖拽对象的数组
       msgs: [
         {
@@ -173,10 +175,14 @@ export default {
   },
   computed: {
     members() {
-      if (this.isSakura) {
-        return this.sakuraMember
-      } else {
-        return this.hinataMember
+      switch (this.group) {
+        case 'sakura':
+          return this.sakuraMember
+        case 'nogi':
+          return this.nogiMember
+        case 'hinata':
+        default:
+          return this.hinataMember
       }
     }
   },
@@ -320,7 +326,7 @@ export default {
         }
         this.recentMembers.unshift({ name: name, avatar: src })
         try {
-          localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+          localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
         } catch (e) {
           alert('缓存失败')
           console.log('Storage failed: ' + e)
@@ -331,7 +337,7 @@ export default {
       if (this.cacheable) {
         this.recentMembers = []
         try {
-          localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+          localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
         } catch (e) {
           alert('缓存失败')
           console.log('Storage failed: ' + e)
@@ -351,7 +357,7 @@ export default {
     removeCache(index) {
       this.recentMembers.splice(index, 1)
       try {
-        localStorage.setItem((this.isSakura ? 'sakura' : 'hinata') + 'RecentMembers', JSON.stringify(this.recentMembers))
+        localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
       } catch (e) {
         alert('缓存失败')
         console.log('Storage failed: ' + e)
@@ -359,15 +365,24 @@ export default {
     }
   },
   mounted() {
-    if (this.$route.params.group == 'sakura') {
-      this.isSakura = true
-      this.memberName = '櫻坂46'
-      this.avatarSrc = this.sakuraAvatar
+    switch (this.$route.params.group) {
+      case 'sakura':
+        this.memberName = '櫻坂46'
+        this.avatarSrc = this.sakuraAvatar
+        this.group = 'sakura'
+        break
+      case 'nogi':
+        this.memberName = '乃木坂46'
+        this.avatarSrc = this.nogiAvatar
+        this.group = 'nogi'
+        break
+      default:
+        this.group = 'hinata'
     }
-    const isSakura = this.isSakura
+
     if (this.localStorageAvailable()) {
       this.cacheable = true
-      let recentCache = JSON.parse(localStorage.getItem((isSakura ? 'sakura' : 'hinata') + 'RecentMembers'))
+      let recentCache = JSON.parse(localStorage.getItem(this.group + 'RecentMembers'))
       if (recentCache && recentCache instanceof Array) {
         this.recentMembers = recentCache
       }
@@ -381,6 +396,7 @@ export default {
   font-family: u0800;
   src: url('../assets/css/u0800.woff');
 }
+
 #home {
   display: flex;
   justify-content: center;
@@ -440,21 +456,6 @@ export default {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
-.talk-header-sakura {
-  width: inherit;
-  height: 60px;
-  background: white;
-  font-size: 22px;
-  font-weight: 500;
-  color: #f390b1;
-  text-align: center;
-  line-height: 60px;
-  background-image: linear-gradient(to right, white 5%, #f390b1 65%, #a254a5);
-  background-size: 100% 2px;
-  background-position: bottom;
-  background-repeat: no-repeat;
-}
-
 .talk-header {
   width: inherit;
   height: 60px;
@@ -465,6 +466,19 @@ export default {
   line-height: 60px;
 }
 
+.talk-header-sakura {
+  background: white;
+  color: #f390b1;
+  background-image: linear-gradient(to right, white 5%, #f390b1 65%, #a254a5);
+  background-size: 100% 2px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.talk-header-nogi {
+  background: linear-gradient(to right, #c485e6, #933fb9 100%);
+}
+
 /* 消息相关css */
 .talk-item {
   display: flex;
@@ -473,6 +487,7 @@ export default {
   margin-top: 1em;
   margin-right: 5px;
 }
+
 .talk-avatar {
   width: 3em;
   height: 3em;
@@ -482,12 +497,14 @@ export default {
   display: inline-block;
   overflow: hidden;
 }
+
 .talk-avatar img {
   width: 100%;
 
   min-height: 100%;
   object-fit: cover;
 }
+
 .talk-msg {
   display: flex;
   flex-direction: column;
@@ -499,6 +516,7 @@ export default {
   width: calc(100% - 5.5em);
   overflow: hidden;
 }
+
 .msg-info {
   width: 95%;
   display: flex;
@@ -517,6 +535,7 @@ export default {
   font-size: 1em;
   text-align: center;
 }
+
 .msg-bubble:after {
   content: ' ';
   position: absolute;
@@ -530,6 +549,7 @@ export default {
   border-left: 10px solid transparent;
   z-index: 0;
 }
+
 /* 气泡mask相关css */
 .mask {
   width: 100%;
@@ -543,18 +563,7 @@ export default {
   color: white;
   fill: white;
 }
-.mask-sakura {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
-  color: white;
-  fill: white;
-}
 .mask:after {
   content: ' ';
   position: absolute;
@@ -567,18 +576,12 @@ export default {
   border-left: 11px solid transparent;
   z-index: 1;
 }
+
 .mask-sakura:after {
-  content: ' ';
-  position: absolute;
-  width: 0;
-  height: 0;
   left: -12px;
-  right: auto;
   top: 8px;
-  bottom: auto;
-  border-left: 11px solid transparent;
-  z-index: 1;
 }
+
 .mask-sakura:before {
   content: ' ';
   position: absolute;
@@ -605,6 +608,7 @@ export default {
     left: calc(100% + 10px);
   }
 }
+
 .remove-mask {
   animation: mask-slide 1s;
   animation-fill-mode: forwards;
@@ -613,9 +617,7 @@ export default {
 .normal {
   background-color: #aaddf0;
 }
-.normal:after {
-  border-top: 15px solid #aaddf0;
-}
+
 .normal-sakura {
   color: #ea94ad;
   fill: #ea94ad;
@@ -623,16 +625,27 @@ export default {
   border: #ea94ad 2px solid;
   background-color: white;
 }
+
+.normal-nogi {
+  background-color: #aa96ef;
+}
+
+.normal:after {
+  border-top: 15px solid #aaddf0;
+}
+
 .normal-sakura:after {
   border-top: 15px solid #ea94ad;
+}
+
+.normal-nogi:after {
+  border-top: 15px solid #aa96ef;
 }
 
 .image {
   background-color: #aacaf0;
 }
-.image:after {
-  border-top: 15px solid #aacaf0;
-}
+
 .image-sakura {
   color: #ea9493;
   fill: #ea9493;
@@ -640,16 +653,27 @@ export default {
   border: #ea9493 2px solid;
   background-color: white;
 }
+
+.image-nogi {
+  background-color: #ee92d5;
+}
+
+.image:after {
+  border-top: 15px solid #aacaf0;
+}
+
 .image-sakura:after {
   border-top: 15px solid #ea9493;
+}
+
+.image-nogi:after {
+  border-top: 15px solid #ee92d5;
 }
 
 .voice {
   background-color: #b8abf0;
 }
-.voice:after {
-  border-top: 15px solid #b8abf0;
-}
+
 .voice-sakura {
   color: #d494eb;
   fill: #d494eb;
@@ -657,18 +681,33 @@ export default {
   border: #d494eb 2px solid;
   background-color: white;
 }
+
+.voice-nogi {
+  background-color: #d39df3;
+}
+
+.voice:after {
+  border-top: 15px solid #b8abf0;
+}
+
 .voice-sakura:after {
   border-top: 15px solid #d494eb;
+}
+
+.voice-nogi:after {
+  border-top: 15px solid #d39df3;
 }
 
 /* 气泡内容相关css */
 .content-wrapper {
   padding: 0.5em;
 }
+
 .msg-bubble .content-wrapper img {
   padding: 0.5em;
   width: 80%;
 }
+
 .msg-content {
   padding: 0.5em;
   text-align: left;
@@ -683,6 +722,7 @@ export default {
 .voice-wrapper {
   height: 2em;
 }
+
 .volume-icon {
   background: #879fc1;
   border: 3px solid #879fc1;
@@ -701,16 +741,6 @@ export default {
 .volume-icon-sakura {
   background: #d496eb;
   border: 3px solid #d496eb;
-  border-radius: 100%;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  color: #fefefe;
-  text-align: center;
-  position: absolute;
-  left: 48%;
-  margin-left: -15px;
-  font-size: 20px;
 }
 
 .voice-content {
