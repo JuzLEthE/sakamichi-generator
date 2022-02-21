@@ -27,12 +27,7 @@ Date.prototype.format = function(fmt) {
   return fmt
 }
 
-Vue.component('vuedraggable', window.vuedraggable)
-
 new Vue({
   router,
-  render: h => h(App),
-  components: {
-    draggable: window['vuedraggable']
-  }
+  render: h => h(App)
 }).$mount('#app')

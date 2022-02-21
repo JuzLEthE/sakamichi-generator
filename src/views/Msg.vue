@@ -60,6 +60,7 @@
 
 <script>
 // 导入draggable组件
+import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
 import NavButtons from '../components/NavButtons.vue'
@@ -68,6 +69,7 @@ export default {
   name: 'Msg',
   // 注册draggable组件
   components: {
+    draggable,
     NavButtons
   },
   data() {
