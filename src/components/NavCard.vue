@@ -1,7 +1,6 @@
 <template>
   <div class="card-container" v-bind:style="[widthPx]">
     <div class="tab-wrapper" v-bind:style="widthPx">
-      <!--tab section 1-->
       <div v-for="item in cards" :key="item.name">
         <input type="radio" name="tab-radio" class="tab-radio" :id="item.name" checked />
         <label :for="item.name" v-bind:class="['tab-handler',group]">{{item.name}}</label>
@@ -9,22 +8,6 @@
           <slot :name="item.name"></slot>
         </div>
       </div>
-      <!--       
-      <input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-2" />
-      <label for="tab-radio-2" class="tab-handler tab-handler-2">常用</label>
-      <div class="tab-content tab-content-2">
-        <slot name="second"></slot>
-      </div>
-      <input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-3" />
-      <label for="tab-radio-3" class="tab-handler tab-handler-3">字体</label>
-      <div class="tab-content tab-content-3">
-        <slot name="third"></slot>
-      </div>
-      <input type="radio" name="tab-radio" class="tab-radio" id="tab-radio-4" />
-      <label for="tab-radio-4" class="tab-handler tab-handler-4">历史</label>
-      <div class="tab-content tab-content-4">
-        <slot name="fourth"></slot>
-      </div>-->
     </div>
   </div>
 </template>

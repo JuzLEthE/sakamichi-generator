@@ -13,13 +13,19 @@
           <p>message图制作</p>
         </div>
       </div>
-      <div class="module3" @click="to('blog')">
+      <div class="module3" @click="to('msg/nogi')">
         <div class="description">
-          <h2>blog生成器</h2>
-          <p>还没做好</p>
+          <h2>乃木坂MSG生成器</h2>
+          <p>message图制作</p>
         </div>
       </div>
-      <div class="module4">
+      <div class="module4" @click="to('blog')">
+        <div class="description">
+          <h2>Blog生成器</h2>
+          <p>鸽了</p>
+        </div>
+      </div>
+      <div class="module5">
         <div class="description">
           <h2>coming soon...</h2>
         </div>
@@ -82,7 +88,7 @@ export default {
   height: 500px;
   width: 900px;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 30px;
   grid-row-gap: 30px;
 }
@@ -127,18 +133,22 @@ h2 {
 
 .module1 {
   background: linear-gradient(-45deg, #23a6d5, #a77bd0, #23a6d5);
-  grid-area: 1 / 1 / 3 / 2;
+  grid-area: 1 / 1 / 2 / 2;
 }
 .module2 {
   background: linear-gradient(-45deg, #a254a5, #f390b1, white);
-  grid-area: 1 / 2 / 3 / 3;
+  grid-area: 1 / 2 / 2 / 3;
 }
 .module3 {
-  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
-  grid-area: 3 / 1 / 5 / 3;
+  background: linear-gradient(-45deg, #c485e6, #933fb9, #c485e6);
+  grid-area: 2 / 1 / 3 / 2;
 }
 .module4 {
-  grid-area: 1 / 3 / 5 / 5;
+  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
+  grid-area: 2 / 2 / 3 / 3;
+}
+.module5 {
+  grid-area: 1 / 3 / 3 / 5;
 }
 @keyframes gradient {
   0% {
