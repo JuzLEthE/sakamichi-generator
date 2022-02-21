@@ -1,12 +1,8 @@
 <template>
   <div id="home">
-    <select v-model="memberName" @change="selectMember" v-show="!isSakura">
-      <option disabled value="请选择成员">请选择成员</option>
-      <option v-for="member in members" :key="member.name">{{ member.name }}</option>
-    </select>
     <div class="container" ref="imageWrapper">
       <div
-        v-bind:class="['talk-header'+(isSakura?'-sakura':'')]"
+        :class="['talk-header','talk-header-'+group]"
         contenteditable="plaintext-only"
         spellcheck="false"
         @blur="changeName"
@@ -16,7 +12,7 @@
         <transition-group>
           <div class="talk-item" v-for="item in msgs" :key="item.id" :ref="'item' + item.id">
             <div class="talk-avatar" contenteditable="true" @drop="setAvatar($event)">
-              <img :src="avartarSrc" />
+              <img :src="avatarSrc" />
             </div>
             <div class="talk-msg" @drop="addImage($event, item)">
               <div class="msg-info">
@@ -26,7 +22,7 @@
               <div class="msg-bubble">
                 <div
                   class="immovable"
-                  v-bind:class="[item.type+(isSakura?'-sakura':''),isSakura?'mask-sakura':'mask']"
+                  v-bind:class="[item.type,item.type+'-'+group,'mask','mask-'+group]"
                   @click="hideMask($event, 'item' + item.id)"
                   v-html="maskIcon[item.type]"
                 ></div>
@@ -42,7 +38,7 @@
                   >{{ item.content }}</div>
                   <div class="msg-content" v-if="item.type === 'voice'">
                     <div class="voice-wrapper">
-                      <i class="fa fa-solid fa-volume-up" v-bind:class="['volume-icon'+(isSakura?'-sakura':'')]"></i>
+                      <i class="fa fa-solid fa-volume-up" v-bind:class="['volume-icon','volume-icon-'+group]"></i>
                       <div class="voice-content" contenteditable="true" spellcheck="false" v-text="item.content"></div>
                     </div>
                   </div>
@@ -54,6 +50,35 @@
       </draggable>
     </div>
 
+    <nav-card class="nav-card" :cards="settingCards" :width="270" :height="340" :group="group">
+      <div slot="成员" class="member-grid">
+        <div v-for="member in members" :key="member.name">
+          <div class="select-avatar-wrapper">
+            <img :src="member.avatar" class="select-avatar" @click="chooseMember(member.name,member.avatar,false)" />
+          </div>
+          <p>{{member.name}}</p>
+        </div>
+      </div>
+      <div slot="常用">
+        <div class="member-grid">
+          <div v-for="(member,index) in recentMembers" :key="index">
+            <div class="select-avatar-wrapper">
+              <img
+                :src="member.avatar"
+                class="select-avatar"
+                @click="chooseMember(member.name,member.avatar,true)"
+                @dblclick="removeCache(index)"
+              />
+            </div>
+            <p>{{member.name}}</p>
+          </div>
+        </div>
+        <p v-show="cacheable&&!recentMembers.length">1.最多可缓存6个,超过后删除最早创建的。2.双击删除该缓存。3.缓存质量可能有损。4.无痕模式下关闭后缓存消失。</p>
+        <p v-show="!cacheable">当前浏览器设置不支持使用localStorage进行缓存。</p>
+        <button @click="cacheAvatar()" style="width:135px;height:30px;position:absolute;bottom:0;left:0;cursor: pointer">缓存</button>
+        <button @click="clearCache()" style="width:135px;height:30px;position:absolute;bottom:0;right:0;cursor: pointer">清空</button>
+      </div>
+    </nav-card>
     <nav-buttons :buttonConfigs="buttonConfig" />
   </div>
 </template>
@@ -63,22 +88,28 @@
 import draggable from 'vuedraggable'
 import html2canvas from 'html2canvas'
 import twemoji from 'twemoji'
-import NavButtons from '../components/NavButtons.vue'
+import NavButtons from '../components/NavButtons'
+import NavCard from '../components/NavCard'
 import '@/assets/css/common.css'
 export default {
   name: 'Msg',
   // 注册draggable组件
   components: {
     draggable,
-    NavButtons
+    NavButtons,
+    NavCard
   },
   data() {
     return {
+      settingCards: [{ name: '成员' }, { name: '常用' }],
+      recentMembers: [],
       dragDisabled: false,
-      isSakura: false,
+      group: 'hinata',
+      cacheable: false,
       memberName: '日向坂46',
-      sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.png'),
-      avartarSrc: require('@/assets/img/avatar/hinata/hnt_logo.svg'),
+      avatarSrc: require('@/assets/img/avatar/hinata/hinata_logo.png'),
+      sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.jpg'),
+      nogiAvatar: require('@/assets/img/avatar/nogi/nogi_logo.png'),
       hinataMember: [
         { name: '潮 紗理菜', avatar: require('@/assets/img/avatar/hinata/sarina.jpg') },
         { name: '影山 優佳', avatar: require('@/assets/img/avatar/hinata/yuuka.jpg') },
@@ -104,6 +135,7 @@ export default {
         { name: '山口 陽世', avatar: require('@/assets/img/avatar/hinata/haruyo.jpg') }
       ],
       sakuraMember: [],
+      nogiMember: [],
       // 定义要被拖拽对象的数组
       msgs: [
         {
@@ -145,10 +177,14 @@ export default {
   },
   computed: {
     members() {
-      if (this.isSakura) {
-        return this.sakuraMember
-      } else {
-        return this.hinataMember
+      switch (this.group) {
+        case 'sakura':
+          return this.sakuraMember
+        case 'nogi':
+          return this.nogiMember
+        case 'hinata':
+        default:
+          return this.hinataMember
       }
     }
   },
@@ -171,11 +207,10 @@ export default {
     changeName(e) {
       this.memberName = e.currentTarget.innerText
     },
-    selectMember() {
-      const selected = this.members.find(item => {
-        return item.name === this.memberName
-      })
-      this.avartarSrc = selected.avatar
+    chooseMember(name, src, isCache) {
+      this.memberName = name
+      this.avatarSrc = src
+      this.isCache = isCache
     },
     setAvatar(e) {
       e.stopPropagation()
@@ -185,7 +220,8 @@ export default {
       fileReader.readAsDataURL(e.dataTransfer.files[0])
       fileReader.addEventListener('load', function () {
         // res是base64格式的图片
-        _this.avartarSrc = fileReader.result
+        _this.avatarSrc = fileReader.result
+        _this.isCache = false
       })
     },
     addMsg(type) {
@@ -275,13 +311,83 @@ export default {
           return { crossorigin: 'anonymous' }
         }
       })
+    },
+    localStorageAvailable() {
+      if (window.Storage && window.localStorage && window.localStorage instanceof Storage) {
+        return true
+      } else {
+        return false
+      }
+    },
+    cacheAvatar() {
+      if (this.cacheable) {
+        const name = this.memberName
+        const src = this.getAvatarDataUrl()
+        if (this.recentMembers.length >= 6) {
+          this.recentMembers.pop()
+        }
+        this.recentMembers.unshift({ name: name, avatar: src })
+        try {
+          localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
+        } catch (e) {
+          alert('缓存失败')
+          console.log('Storage failed: ' + e)
+        }
+      }
+    },
+    clearCache() {
+      if (this.cacheable) {
+        this.recentMembers = []
+        try {
+          localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
+        } catch (e) {
+          alert('缓存失败')
+          console.log('Storage failed: ' + e)
+        }
+      }
+    },
+    getAvatarDataUrl() {
+      const img = document.querySelector('.talk-item .talk-avatar img')
+      const ratio = 4
+      let imgCanvas = document.createElement('canvas')
+      let imgContext = imgCanvas.getContext('2d')
+      imgCanvas.height = img.height * ratio
+      imgCanvas.width = img.width * ratio
+      imgContext.drawImage(img, 0, 0, img.width * ratio, img.height * ratio)
+      return imgCanvas.toDataURL('image/png')
+    },
+    removeCache(index) {
+      this.recentMembers.splice(index, 1)
+      try {
+        localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
+      } catch (e) {
+        alert('缓存失败')
+        console.log('Storage failed: ' + e)
+      }
     }
   },
   mounted() {
-    if (this.$route.params.group == 'sakura') {
-      this.isSakura = true
-      this.memberName = '櫻坂46'
-      this.avartarSrc = this.sakuraAvatar
+    switch (this.$route.params.group) {
+      case 'sakura':
+        this.memberName = '櫻坂46'
+        this.avatarSrc = this.sakuraAvatar
+        this.group = 'sakura'
+        break
+      case 'nogi':
+        this.memberName = '乃木坂46'
+        this.avatarSrc = this.nogiAvatar
+        this.group = 'nogi'
+        break
+      default:
+        this.group = 'hinata'
+    }
+
+    if (this.localStorageAvailable()) {
+      this.cacheable = true
+      let recentCache = JSON.parse(localStorage.getItem(this.group + 'RecentMembers'))
+      if (recentCache && recentCache instanceof Array) {
+        this.recentMembers = recentCache
+      }
     }
   }
 }
@@ -292,13 +398,49 @@ export default {
   font-family: u0800;
   src: url('../assets/css/u0800.woff');
 }
+
 #home {
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0;
   min-height: 100vh;
-  font-family: 'Noto Sans SC', u0800;
+  font-family: 'PingFang SC', 'Noto Sans SC Regular', u0800;
+}
+
+.nav-card {
+  bottom: 700px;
+  right: 57px;
+  position: fixed;
+}
+
+.member-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  overflow: auto;
+  height: inherit;
+  column-gap: 10px;
+  text-align: center;
+}
+
+.select-avatar-wrapper {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+  margin: 5px auto;
+
+  border-radius: 50%;
+}
+
+.select-avatar {
+  width: 100%;
+
+  min-height: 100%;
+  object-fit: cover;
+}
+
+.select-avatar:hover {
+  cursor: pointer;
 }
 
 .container {
@@ -316,21 +458,6 @@ export default {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 
-.talk-header-sakura {
-  width: inherit;
-  height: 60px;
-  background: white;
-  font-size: 22px;
-  font-weight: 500;
-  color: #f390b1;
-  text-align: center;
-  line-height: 60px;
-  background-image: linear-gradient(to right, white 5%, #f390b1 65%, #a254a5);
-  background-size: 100% 2px;
-  background-position: bottom;
-  background-repeat: no-repeat;
-}
-
 .talk-header {
   width: inherit;
   height: 60px;
@@ -341,6 +468,19 @@ export default {
   line-height: 60px;
 }
 
+.talk-header-sakura {
+  background: white;
+  color: #f390b1;
+  background-image: linear-gradient(to right, white 5%, #f390b1 65%, #a254a5);
+  background-size: 100% 2px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+}
+
+.talk-header-nogi {
+  background: linear-gradient(to right, #c485e6, #933fb9 100%);
+}
+
 /* 消息相关css */
 .talk-item {
   display: flex;
@@ -349,6 +489,7 @@ export default {
   margin-top: 1em;
   margin-right: 5px;
 }
+
 .talk-avatar {
   width: 3em;
   height: 3em;
@@ -358,12 +499,14 @@ export default {
   display: inline-block;
   overflow: hidden;
 }
+
 .talk-avatar img {
   width: 100%;
 
   min-height: 100%;
   object-fit: cover;
 }
+
 .talk-msg {
   display: flex;
   flex-direction: column;
@@ -375,6 +518,7 @@ export default {
   width: calc(100% - 5.5em);
   overflow: hidden;
 }
+
 .msg-info {
   width: 95%;
   display: flex;
@@ -393,6 +537,7 @@ export default {
   font-size: 1em;
   text-align: center;
 }
+
 .msg-bubble:after {
   content: ' ';
   position: absolute;
@@ -406,6 +551,7 @@ export default {
   border-left: 10px solid transparent;
   z-index: 0;
 }
+
 /* 气泡mask相关css */
 .mask {
   width: 100%;
@@ -419,18 +565,7 @@ export default {
   color: white;
   fill: white;
 }
-.mask-sakura {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
-  color: white;
-  fill: white;
-}
 .mask:after {
   content: ' ';
   position: absolute;
@@ -443,18 +578,12 @@ export default {
   border-left: 11px solid transparent;
   z-index: 1;
 }
+
 .mask-sakura:after {
-  content: ' ';
-  position: absolute;
-  width: 0;
-  height: 0;
   left: -12px;
-  right: auto;
   top: 8px;
-  bottom: auto;
-  border-left: 11px solid transparent;
-  z-index: 1;
 }
+
 .mask-sakura:before {
   content: ' ';
   position: absolute;
@@ -481,6 +610,7 @@ export default {
     left: calc(100% + 10px);
   }
 }
+
 .remove-mask {
   animation: mask-slide 1s;
   animation-fill-mode: forwards;
@@ -489,9 +619,7 @@ export default {
 .normal {
   background-color: #aaddf0;
 }
-.normal:after {
-  border-top: 15px solid #aaddf0;
-}
+
 .normal-sakura {
   color: #ea94ad;
   fill: #ea94ad;
@@ -499,16 +627,27 @@ export default {
   border: #ea94ad 2px solid;
   background-color: white;
 }
+
+.normal-nogi {
+  background-color: #aa96ef;
+}
+
+.normal:after {
+  border-top: 15px solid #aaddf0;
+}
+
 .normal-sakura:after {
   border-top: 15px solid #ea94ad;
+}
+
+.normal-nogi:after {
+  border-top: 15px solid #aa96ef;
 }
 
 .image {
   background-color: #aacaf0;
 }
-.image:after {
-  border-top: 15px solid #aacaf0;
-}
+
 .image-sakura {
   color: #ea9493;
   fill: #ea9493;
@@ -516,16 +655,27 @@ export default {
   border: #ea9493 2px solid;
   background-color: white;
 }
+
+.image-nogi {
+  background-color: #ee92d5;
+}
+
+.image:after {
+  border-top: 15px solid #aacaf0;
+}
+
 .image-sakura:after {
   border-top: 15px solid #ea9493;
+}
+
+.image-nogi:after {
+  border-top: 15px solid #ee92d5;
 }
 
 .voice {
   background-color: #b8abf0;
 }
-.voice:after {
-  border-top: 15px solid #b8abf0;
-}
+
 .voice-sakura {
   color: #d494eb;
   fill: #d494eb;
@@ -533,18 +683,33 @@ export default {
   border: #d494eb 2px solid;
   background-color: white;
 }
+
+.voice-nogi {
+  background-color: #d39df3;
+}
+
+.voice:after {
+  border-top: 15px solid #b8abf0;
+}
+
 .voice-sakura:after {
   border-top: 15px solid #d494eb;
+}
+
+.voice-nogi:after {
+  border-top: 15px solid #d39df3;
 }
 
 /* 气泡内容相关css */
 .content-wrapper {
   padding: 0.5em;
 }
+
 .msg-bubble .content-wrapper img {
   padding: 0.5em;
   width: 80%;
 }
+
 .msg-content {
   padding: 0.5em;
   text-align: left;
@@ -559,6 +724,7 @@ export default {
 .voice-wrapper {
   height: 2em;
 }
+
 .volume-icon {
   background: #879fc1;
   border: 3px solid #879fc1;
@@ -577,16 +743,6 @@ export default {
 .volume-icon-sakura {
   background: #d496eb;
   border: 3px solid #d496eb;
-  border-radius: 100%;
-  width: 25px;
-  height: 25px;
-  line-height: 25px;
-  color: #fefefe;
-  text-align: center;
-  position: absolute;
-  left: 48%;
-  margin-left: -15px;
-  font-size: 20px;
 }
 
 .voice-content {

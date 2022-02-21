@@ -13,26 +13,28 @@
           <p>message图制作</p>
         </div>
       </div>
-      <div class="module3" @click="to('blog')">
+      <div class="module3" @click="to('msg/nogi')">
         <div class="description">
-          <h2>blog生成器</h2>
-          <p>还没做好</p>
+          <h2>乃木坂MSG生成器</h2>
+          <p>message图制作</p>
         </div>
       </div>
-      <div class="module4" onclick="window.open('https://preview.hnz46.cn')">
+      <div class="module4" @click="to('blog')">
+        <div class="description">
+          <h2>Blog生成器</h2>
+          <p>鸽了</p>
+        </div>
+      </div>
+      <div class="module5" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
           <h2>预览版</h2>
-          <h4>2021年11月13日</h4>
-          <p>1.调整字体: 'PingFang SC', 'Noto Sans SC Regular'</p>
-          <p>2.调整成员选择方式。</p>
-          <p>3.增加头像与名称本地缓存。</p>
+          <h4>2022年2月21日</h4>
+          <p>1.增加乃木坂46样式。</p>
           <p>
             <br />
           </p>
           <h4>已同步到发布版的内容:</h4>
-          <p>1.MSG生成器取消最低高度。</p>
-          <p>2.MSG生成器取消消息气泡圆角。</p>
-          <p>3.MSG生成器增加樱坂46样式。</p>
+          <p>1.全部。</p>
         </div>
       </div>
     </div>
@@ -57,9 +59,7 @@ import beianImg from '@/assets/img/beian.png'
 export default {
   name: 'Home',
   data() {
-    return {
-      beianImg: beianImg
-    }
+    return { beianImg: beianImg }
   },
   methods: {
     to(target) {
@@ -83,7 +83,6 @@ export default {
   justify-content: center;
   align-items: center;
 }
-
 #home {
   min-height: 100vh;
   margin: 0;
@@ -96,7 +95,7 @@ export default {
   height: 500px;
   width: 900px;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(2, 1fr);
   grid-column-gap: 30px;
   grid-row-gap: 30px;
 }
@@ -141,19 +140,23 @@ h2 {
 
 .module1 {
   background: linear-gradient(-45deg, #23a6d5, #a77bd0, #23a6d5);
-  grid-area: 1 / 1 / 3 / 2;
+  grid-area: 1 / 1 / 2 / 2;
 }
 .module2 {
   background: linear-gradient(-45deg, #a254a5, #f390b1, white);
-  grid-area: 1 / 2 / 3 / 3;
+  grid-area: 1 / 2 / 2 / 3;
 }
 .module3 {
-  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
-  grid-area: 3 / 1 / 5 / 3;
+  background: linear-gradient(-45deg, #c485e6, #933fb9, #c485e6);
+  grid-area: 2 / 1 / 3 / 2;
 }
 .module4 {
-  background: linear-gradient(-45deg, #f390b1, white, #23a6d5);
-  grid-area: 1 / 3 / 5 / 5;
+  background: linear-gradient(-45deg, #28a8f7, #fdf259, #28a8f7);
+  grid-area: 2 / 2 / 3 / 3;
+}
+.module5 {
+  background: linear-gradient(-45deg, #933fb9, white, #23a6d5);
+  grid-area: 1 / 3 / 3 / 5;
 }
 @keyframes gradient {
   0% {
