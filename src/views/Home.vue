@@ -28,8 +28,9 @@
       <div class="module5" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
           <h2>预览版</h2>
-          <h4>2022年2月21日</h4>
-          <p>1.增加乃木坂46样式。</p>
+          <h4>2022年2月22日</h4>
+          <p>1.调整部分图标样式。</p>
+          <p>2.调整乃木坂音频消息样式。</p>
           <p>
             <br />
           </p>
