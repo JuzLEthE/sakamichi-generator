@@ -15,7 +15,7 @@
       :class="item.color"
       @click="handleClick(item.func,...item.args)"
     >
-      <i :class="item.icon"></i>
+      <font-awesome-icon :icon="item.icon"></font-awesome-icon>
     </a>
   </nav>
 </template>
