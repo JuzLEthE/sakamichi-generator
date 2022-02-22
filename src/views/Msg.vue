@@ -148,7 +148,7 @@ export default {
       msgs: [
         {
           id: Date.now(),
-          time: new Date().format('MM/dd hh:mm'),
+          time: new Date().format('M/dd hh:mm'),
           content:
             '1.拖动本地图片到头像处进行替换。2.拖动本地图片到气泡上进行上传，双击图片取消。3.点击顶部文字和每条消息的时间，可以进行修改。4.如需处理emoji或者超链接，请复制后粘贴到气泡中。',
           type: 'normal'
@@ -236,7 +236,7 @@ export default {
     addMsg(type) {
       let msg = {
         id: Date.now(),
-        time: new Date().format('MM/dd hh:mm'),
+        time: new Date().format('M/dd hh:mm'),
         type
       }
       Object.assign(msg, this.type[type])
@@ -293,7 +293,7 @@ export default {
       let aLink = document.createElement('a')
       aLink.style.display = 'none'
       aLink.href = downloadUrl
-      aLink.download = 'msg.png'
+      aLink.download = this.memberName + '_' + new Date().format('MMdd') + '.png'
       // 触发点击-然后移除
       document.body.appendChild(aLink)
       aLink.click()
