@@ -28,16 +28,16 @@
       <div class="module5" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
           <h2>预览版</h2>
-          <h4>2022年2月22日</h4>
-          <p>1.调整部分图标样式。</p>
-          <p>2.调整乃木坂音频消息样式。</p>
-          <p>3.调整消息时间格式为:M/dd hh:mm。</p>
-          <p>4.调整生成图片文件名为:成员名_MMdd.png。</p>
+          <h4>2022年3月8日</h4>
+          <p>1.更新html2canvas版本至1.4.1。</p>
           <p>
             <br />
           </p>
           <h4>已同步到发布版的内容:</h4>
-          <p>1.全部。</p>
+          <p>1.调整部分图标样式。</p>
+          <p>2.调整乃木坂音频消息样式。</p>
+          <p>3.调整消息时间格式为:M/dd hh:mm。</p>
+          <p>4.调整生成图片文件名为:成员名_MMdd.png。</p>
         </div>
       </div>
     </div>
