@@ -28,8 +28,9 @@
       <div class="module5" onclick="window.open('https://preview.hnz46.cn')">
         <div class="description">
           <h2>预览版</h2>
-          <h4>2022年3月8日</h4>
+          <h4>2022年3月9日</h4>
           <p>1.更新html2canvas版本至1.4.1。</p>
+          <p>2.更新音频样式。</p>
           <p>
             <br />
           </p>
