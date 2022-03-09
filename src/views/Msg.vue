@@ -28,16 +28,8 @@
                 ></div>
                 <div class="content-wrapper">
                   <img @dblclick="removeImg($event, item)" hidden crossorigin="anonymous" contenteditable />
-                  <div
-                    class="msg-content"
-                    v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '20px' }"
-                    contenteditable="true"
-                    spellcheck="false"
-                    v-if="item.type !== 'voice'"
-                    @paste="contentPaste"
-                  >{{ item.content }}</div>
                   <div class="msg-content" v-if="item.type === 'voice'">
-                    <div v-if="group == 'nogi'" class="voice-wrapper-nogi">
+                    <div class="voice-wrapper">
                       <div class="progress"></div>
                       <div class="control-group">
                         <font-awesome-icon icon="fa-solid fa-volume-up" class="controls"></font-awesome-icon>
@@ -45,11 +37,15 @@
                         <div class="controls" contenteditable="true" spellcheck="false" v-text="item.content"></div>
                       </div>
                     </div>
-                    <div v-else class="voice-wrapper">
-                      <i class="fa fa-solid fa-volume-up" v-bind:class="['volume-icon','volume-icon-'+group]"></i>
-                      <div class="voice-content" contenteditable="true" spellcheck="false" v-text="item.content"></div>
-                    </div>
                   </div>
+                  <div
+                    class="msg-content"
+                    v-bind:style="{ minHeight: item.type == 'image' ? '150px' : '20px' }"
+                    contenteditable="true"
+                    spellcheck="false"
+                    v-else
+                    @paste="contentPaste"
+                  >{{ item.content }}</div>
                 </div>
               </div>
             </div>
@@ -731,10 +727,6 @@ export default {
 }
 
 .voice-wrapper {
-  height: 2em;
-}
-
-.voice-wrapper-nogi {
   display: flex;
   align-items: center;
   justify-content: center;
