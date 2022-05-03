@@ -17,7 +17,13 @@
             <div class="talk-msg" @drop="addImage($event, item)">
               <div class="msg-info">
                 <div v-text="memberName"></div>
-                <div style="min-width: 30px" contenteditable="true" spellcheck="false" v-text="item.time"></div>
+                <div
+                  style="min-width: 30px"
+                  contenteditable="true"
+                  spellcheck="false"
+                  @blur="syncTime($event.target,item)"
+                  v-text="item.time"
+                ></div>
               </div>
               <div class="msg-bubble">
                 <div
@@ -340,6 +346,9 @@ export default {
     },
     syncContent(target, item) {
       item.content = target.innerHTML
+    },
+    syncTime(target, item) {
+      item.time = target.innerHTML
     },
     contentPaste(e) {
       e.stopPropagation()
