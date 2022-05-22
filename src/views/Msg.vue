@@ -36,7 +36,7 @@
                   <img @dblclick="removeImg($event, item)" hidden crossorigin="anonymous" contenteditable />
                   <div class="msg-content" v-if="item.type === 'voice'">
                     <div class="voice-wrapper">
-                      <div class="progress"></div>
+                      <div :class="['progress','progress-'+group]"></div>
                       <div class="control-group">
                         <font-awesome-icon icon="fa-solid fa-volume-up" class="controls"></font-awesome-icon>
                         <font-awesome-icon icon="fa-solid fa-play" class="controls"></font-awesome-icon>
@@ -869,6 +869,10 @@ export default {
   border-radius: 50%;
   position: absolute;
   background-color: #8f34b4;
+}
+
+.progress-sakura::before {
+  background-color: #ed93b1;
 }
 
 .control-group {
