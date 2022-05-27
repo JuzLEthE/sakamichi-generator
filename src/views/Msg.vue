@@ -1,5 +1,5 @@
 <template>
-  <div id="home">
+  <div id="home" ref="home">
     <div class="container" ref="imageWrapper">
       <div
         :class="['talk-header','talk-header-'+group]"
@@ -286,6 +286,9 @@ export default {
       }
       Object.assign(msg, this.type[type])
       this.msgs.push(msg)
+      this.$nextTick(() => {
+        this.$refs.home.scrollTop = this.$refs.home.scrollHeight
+      })
     },
     removeMsg() {
       this.msgs.pop()
@@ -520,10 +523,11 @@ export default {
 #home {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   margin: 0;
-  min-height: 100vh;
   font-family: 'PingFang SC', 'Noto Sans SC Regular', u0800;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .nav-card {
