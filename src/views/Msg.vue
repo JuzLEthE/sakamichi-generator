@@ -1,9 +1,9 @@
 <template>
-  <div id="home">
+  <div id="home" ref="home">
     <div class="container" ref="imageWrapper">
       <div
         :class="['talk-header','talk-header-'+group]"
-        contenteditable="plaintext-only"
+        :contenteditable="contentEditPlainText"
         spellcheck="false"
         @blur="changeName"
         v-text="memberName"
@@ -17,7 +17,13 @@
             <div class="talk-msg" @drop="addImage($event, item)">
               <div class="msg-info">
                 <div v-text="memberName"></div>
-                <div style="min-width: 30px" contenteditable="true" spellcheck="false" v-text="item.time"></div>
+                <div
+                  style="min-width: 30px"
+                  :contenteditable="contentEditPlainText"
+                  spellcheck="false"
+                  @blur="syncTime($event.target,item)"
+                  v-text="item.time"
+                ></div>
               </div>
               <div class="msg-bubble">
                 <div
@@ -30,11 +36,17 @@
                   <img @dblclick="removeImg($event, item)" hidden crossorigin="anonymous" contenteditable />
                   <div class="msg-content" v-if="item.type === 'voice'">
                     <div class="voice-wrapper">
-                      <div class="progress"></div>
+                      <div :class="['progress','progress-'+group]"></div>
                       <div class="control-group">
                         <font-awesome-icon icon="fa-solid fa-volume-up" class="controls"></font-awesome-icon>
                         <font-awesome-icon icon="fa-solid fa-play" class="controls"></font-awesome-icon>
-                        <div class="controls" contenteditable="true" spellcheck="false" v-text="item.content"></div>
+                        <div
+                          class="controls"
+                          contenteditable="true"
+                          spellcheck="false"
+                          @blur="syncContent($event.target,item)"
+                          v-html="item.content"
+                        ></div>
                       </div>
                     </div>
                   </div>
@@ -45,7 +57,9 @@
                     spellcheck="false"
                     v-else
                     @paste="contentPaste"
-                  >{{ item.content }}</div>
+                    @blur="syncContent($event.target,item)"
+                    v-html="item.content"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -77,10 +91,43 @@
             <p>{{member.name}}</p>
           </div>
         </div>
-        <p v-show="cacheable&&!recentMembers.length">1.最多可缓存6个,超过后删除最早创建的。2.双击删除该缓存。3.缓存质量可能有损。4.无痕模式下关闭后缓存消失。</p>
+        <p v-show="cacheable&&!recentMembers.length">
+          1.最多可缓存6个,超过后删除最早创建的。
+          <br />2.双击删除该缓存。
+          <br />3.缓存质量可能有损。
+          <br />4.无痕模式下关闭后缓存消失。
+        </p>
         <p v-show="!cacheable">当前浏览器设置不支持使用localStorage进行缓存。</p>
         <button @click="cacheAvatar()" style="width:135px;height:30px;position:absolute;bottom:0;left:0;cursor: pointer">缓存</button>
         <button @click="clearCache()" style="width:135px;height:30px;position:absolute;bottom:0;right:0;cursor: pointer">清空</button>
+      </div>
+      <div slot="msg缓存">
+        <div class="member-grid">
+          <div v-for="(item,index) in recentMsgs" :key="index">
+            <div class="select-avatar-wrapper">
+              <img
+                :src="item.avatar"
+                class="select-avatar"
+                @click="loadMsgs(item.name,item.avatar,item.msgs)"
+                @dblclick="removeMsgsCache(index)"
+              />
+            </div>
+            <p>
+              {{item.name}}
+              <br />
+              {{item.date}}
+            </p>
+          </div>
+        </div>
+        <p v-show="cacheable&&!recentMsgs.length">
+          1.最多可缓存6个,超过后删除最早创建的。
+          <br />2.双击删除该缓存。
+          <br />3.不缓存图片。
+          <br />4.无痕模式下关闭后缓存消失。
+        </p>
+        <p v-show="!cacheable">当前浏览器设置不支持使用localStorage进行缓存。</p>
+        <button @click="cacheMsgs()" style="width:135px;height:30px;position:absolute;bottom:0px;left:0;cursor: pointer">缓存</button>
+        <button @click="clearMsgsCache()" style="width:135px;height:30px;position:absolute;bottom:0px;right:0;cursor: pointer">清空</button>
       </div>
     </nav-card>
     <nav-buttons :buttonConfigs="buttonConfig" />
@@ -105,11 +152,13 @@ export default {
   },
   data() {
     return {
-      settingCards: [{ name: '成员' }, { name: '常用' }],
+      settingCards: [{ name: '成员' }, { name: '常用' }, { name: 'msg缓存' }],
       recentMembers: [],
+      recentMsgs: [],
       dragDisabled: false,
-      group: 'hinata',
       cacheable: false,
+      contentEditPlainText: 'plaintext-only',
+      group: 'hinata',
       memberName: '日向坂46',
       avatarSrc: require('@/assets/img/avatar/hinata/hinata_logo.png'),
       sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.jpg'),
@@ -193,6 +242,7 @@ export default {
       }
     }
   },
+
   methods: {
     to(target) {
       if (confirm('确定要跳转吗？')) {
@@ -237,6 +287,9 @@ export default {
       }
       Object.assign(msg, this.type[type])
       this.msgs.push(msg)
+      this.$nextTick(() => {
+        this.$refs.home.scrollTop = this.$refs.home.scrollHeight
+      })
     },
     removeMsg() {
       this.msgs.pop()
@@ -295,7 +348,12 @@ export default {
       aLink.click()
       document.body.removeChild(aLink)
     },
-
+    syncContent(target, item) {
+      item.content = target.innerHTML
+    },
+    syncTime(target, item) {
+      item.time = target.innerHTML
+    },
     contentPaste(e) {
       e.stopPropagation()
 
@@ -346,7 +404,7 @@ export default {
         try {
           localStorage.setItem(this.group + 'RecentMembers', JSON.stringify(this.recentMembers))
         } catch (e) {
-          alert('缓存失败')
+          alert('清空缓存失败')
           console.log('Storage failed: ' + e)
         }
       }
@@ -369,6 +427,61 @@ export default {
         alert('缓存失败')
         console.log('Storage failed: ' + e)
       }
+    },
+
+    cacheMsgs() {
+      if (this.cacheable && this.msgs.length > 0) {
+        try {
+          let cacheObj = {
+            date: new Date().format('MM-dd hh:mm:ss'),
+            msgs: JSON.stringify(this.msgs),
+            name: this.memberName,
+            avatar: this.avatarSrc
+          }
+
+          if (this.recentMsgs.length >= 6) {
+            this.recentMsgs.pop()
+          }
+          this.recentMsgs.unshift(cacheObj)
+          localStorage.setItem(this.group + 'RecentMsgs', JSON.stringify(this.recentMsgs))
+          console.log('msgs saved')
+        } catch (e) {
+          console.log('cache msg failed: ' + e)
+        }
+      }
+    },
+    clearMsgsCache() {
+      if (this.cacheable) {
+        this.recentMsgs = []
+        try {
+          localStorage.setItem(this.group + 'RecentMsgs', JSON.stringify(this.recentMsgs))
+        } catch (e) {
+          alert('清空缓存失败')
+          console.log('Storage failed: ' + e)
+        }
+      }
+    },
+    loadMsgs(name, src, msgsStr) {
+      this.memberName = name
+      this.avatarSrc = src
+
+      this.msgs.length = 0
+      let msgs = JSON.parse(msgsStr)
+      msgs.forEach(element => {
+        this.msgs.push(element)
+      })
+    },
+    removeMsgsCache(index) {
+      if (!confirm('确定要清除该缓存吗？')) {
+        return
+      }
+      this.recentMsgs.splice(index, 1)
+      try {
+        localStorage.setItem(this.group + 'RecentMsgs', JSON.stringify(this.recentMsgs))
+      } catch (e) {
+        alert('清空缓存失败')
+        console.log('Storage failed: ' + e)
+      }
     }
   },
   mounted() {
@@ -389,10 +502,19 @@ export default {
 
     if (this.localStorageAvailable()) {
       this.cacheable = true
-      let recentCache = JSON.parse(localStorage.getItem(this.group + 'RecentMembers'))
-      if (recentCache && recentCache instanceof Array) {
-        this.recentMembers = recentCache
+      let recentMembers = JSON.parse(localStorage.getItem(this.group + 'RecentMembers'))
+      if (recentMembers && recentMembers instanceof Array) {
+        this.recentMembers = recentMembers
       }
+      let recentMsgs = JSON.parse(localStorage.getItem(this.group + 'RecentMsgs'))
+      if (recentMsgs && recentMsgs instanceof Array) {
+        this.recentMsgs = recentMsgs
+      }
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      this.contentEditPlainText = 'true'
+      alert('火狐浏览器下编辑可能会出现显示异常，建议使用Chrome浏览器或Edge浏览器')
     }
   }
 }
@@ -407,10 +529,11 @@ export default {
 #home {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   margin: 0;
-  min-height: 100vh;
   font-family: 'PingFang SC', 'Noto Sans SC Regular', u0800;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .nav-card {
@@ -756,6 +879,10 @@ export default {
   border-radius: 50%;
   position: absolute;
   background-color: #8f34b4;
+}
+
+.progress-sakura::before {
+  background-color: #ed93b1;
 }
 
 .control-group {

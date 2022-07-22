@@ -3,7 +3,7 @@
     <div class="tab-wrapper" v-bind:style="widthPx">
       <div v-for="item in cards" :key="item.name">
         <input type="radio" name="tab-radio" class="tab-radio" :id="item.name" checked />
-        <label :for="item.name" v-bind:class="['tab-handler',group]">{{item.name}}</label>
+        <label :for="item.name" v-bind:class="['tab-handler',group]" :style="{width:`${width/cards.length}px`}">{{item.name}}</label>
         <div class="tab-content" v-bind:style="[widthPx,heightPx]">
           <slot :name="item.name"></slot>
         </div>
@@ -57,7 +57,6 @@ export default {
   font-size: 16px;
   line-height: 40px;
   transition: 0.3s;
-  width: 135px;
   text-align: center;
 }
 .tab-radio:checked + .tab-handler {
