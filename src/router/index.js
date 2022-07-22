@@ -9,12 +9,18 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      title: 'msg图制作工具'
+    }
   },
   {
     path: '/msg/:group',
     name: 'Msg',
-    component: Msg
+    component: Msg,
+    meta: {
+      title: 'msg图制作'
+    }
   },
   {
     path: '/msg',
@@ -23,21 +29,25 @@ const routes = [
   {
     path: '/blog',
     name: 'Blog',
-    component: Blog
-  },
-  {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    component: Blog,
+    meta: {
+      title: '博客图制作'
+    }
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   routes
+})
+
+const mapping = { hinata: '日向坂46', sakura: '櫻坂46', nogi: '乃木坂46' }
+
+router.beforeEach((to, from, next) => {
+  let groupName = mapping[to.params.group]
+
+  document.title = (groupName ? groupName : '坂道') + to.meta?.title
+  next()
 })
 
 export default router

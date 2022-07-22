@@ -3,7 +3,7 @@
     <div class="container" ref="imageWrapper">
       <div
         :class="['talk-header','talk-header-'+group]"
-        contenteditable="plaintext-only"
+        :contenteditable="contentEditPlainText"
         spellcheck="false"
         @blur="changeName"
         v-text="memberName"
@@ -19,7 +19,7 @@
                 <div v-text="memberName"></div>
                 <div
                   style="min-width: 30px"
-                  contenteditable="true"
+                  :contenteditable="contentEditPlainText"
                   spellcheck="false"
                   @blur="syncTime($event.target,item)"
                   v-text="item.time"
@@ -156,8 +156,9 @@ export default {
       recentMembers: [],
       recentMsgs: [],
       dragDisabled: false,
-      group: 'hinata',
       cacheable: false,
+      contentEditPlainText: 'plaintext-only',
+      group: 'hinata',
       memberName: '日向坂46',
       avatarSrc: require('@/assets/img/avatar/hinata/hinata_logo.png'),
       sakuraAvatar: require('@/assets/img/avatar/sakura/sakura_logo.jpg'),
@@ -509,6 +510,11 @@ export default {
       if (recentMsgs && recentMsgs instanceof Array) {
         this.recentMsgs = recentMsgs
       }
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      this.contentEditPlainText = 'true'
+      alert('火狐浏览器下编辑可能会出现显示异常，建议使用Chrome浏览器或Edge浏览器')
     }
   }
 }
