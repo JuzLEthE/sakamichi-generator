@@ -19,10 +19,10 @@
           <p>message图制作</p>
         </div>
       </div>
-      <div class="module4" @click="to('blog')">
+      <div class="module4" @click="openNewWindow('http://plat.hnz46.cn/')">
         <div class="description">
-          <h2>Blog生成器</h2>
-          <p>鸽了</p>
+          <h2>平台</h2>
+          <p>杂七杂八的半成品</p>
         </div>
       </div>
       <div class="module5" onclick="window.open('https://preview.hnz46.cn')">
@@ -63,6 +63,9 @@ export default {
   methods: {
     to(target) {
       this.$router.push(target)
+    },
+    openNewWindow(url) {
+      window.open(url, '_blank')
     }
   }
 }
